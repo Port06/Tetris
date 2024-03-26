@@ -15,14 +15,22 @@ public class Tetris {
         // Create a container panel to center the Tetris panel
         JPanel containerPanel = new JPanel();
         containerPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-        containerPanel.add(tauler);
+        
+        // Create an empty panel to occupy vertical space above the Tetris board
+        JPanel topSpacePanel = new JPanel();
+        topSpacePanel.setPreferredSize(new Dimension(1200, 210)); // Adjust the height as needed
+        containerPanel.add(topSpacePanel);
+
+        // Add the Tetris board to the container panel
+        containerPanel.add(tauler, BorderLayout.CENTER);
 
         // Add the container panel to the frame
         frame.add(containerPanel);
 
         // Set frame properties
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 400); // Set the initial frame size
+        frame.setSize(800, 800); // Set the initial frame size
+        frame.setMinimumSize(new Dimension(700, 700)); // Set minimum size
         frame.setLocationRelativeTo(null); // Center the frame on the screen
         frame.setVisible(true);
     }

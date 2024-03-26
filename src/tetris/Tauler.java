@@ -9,7 +9,7 @@ import java.awt.geom.Rectangle2D;
 public class Tauler extends JPanel {
 
     public static final int DIMENSIO = 20;
-    private static final int MAXIM = 1000;
+    private static final int MAXIM = 500;
     private static final int COSTAT = MAXIM / DIMENSIO;
     private static final Color WHITE = Color.WHITE;
     private static final Color MAGENTA = Color.MAGENTA;
@@ -18,6 +18,7 @@ public class Tauler extends JPanel {
     public Tauler() {
         t = new Casella[DIMENSIO][DIMENSIO];
         int y = 0;
+        
         for (int i = 0; i < DIMENSIO; i++) {
             int x = 0;
             for (int j = 0; j < DIMENSIO; j++) {
