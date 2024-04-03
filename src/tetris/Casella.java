@@ -4,21 +4,24 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
-public class Casella {
-    
+class Casella {
     private Rectangle2D.Float rec;
-    private Color col;
+    private ImageIcon texture;
     private boolean ocupada;
 
-    public Casella(Rectangle2D.Float r, Color c, boolean ocu ) {
+    public Casella(Rectangle2D.Float r, boolean ocu) {
         this.rec = r;
-        this.col = c;
         this.ocupada = ocu;
+        this.texture = new ImageIcon(getClass().getResource("/LIBRE.jpg"));
     }
 
     public void paintComponent(Graphics2D g2d) {
-        g2d.setColor(this.col);
-        g2d.fill(this.rec);
+        if (ocupada && texture != null) {
+            g2d.drawImage(texture.getImage(), (int) rec.getX(), (int) rec.getY(), (int) rec.getWidth(), (int) rec.getHeight(), null);
+        } else {
+            g2d.setColor(Color.WHITE); // Set color to white for empty tiles
+            g2d.fill(rec);
+        }
     }
 
     public Rectangle2D.Float getRec() {
@@ -33,12 +36,12 @@ public class Casella {
         this.ocupada = ocupada;
     }
 
-    public Color getColor() {
-        return col;
+    public ImageIcon getTexture() {
+        return texture;
     }
 
-    public void setColor(Color col) {
-        this.col = col;
+    public void setTexture(String textureFileName) {
+        this.texture = new ImageIcon(getClass().getResource("/CHOCOLATE.jpg"));
     }
 }
 
