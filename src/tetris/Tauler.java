@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
+import java.util.Random;
 
 public class Tauler extends JPanel {
 
@@ -12,8 +13,17 @@ public class Tauler extends JPanel {
     private static final int MAXIM = 500;
     private static final int COSTAT = MAXIM / DIMENSIO;
     private Casella[][] t;
+    private PreviewPanel previewPanel;
+    private TetrisPiece currentPiece;
+    private TetrisPiece nextPiece;
 
-    public Tauler() {
+    public Tauler(PreviewPanel previewPanel) {
+        
+        this.previewPanel = previewPanel;
+        currentPiece = selectRandomPiece();
+        nextPiece = selectRandomPiece();
+        
+        
         t = new Casella[DIMENSIO][DIMENSIO];
         int y = 0;
 
@@ -33,14 +43,90 @@ public class Tauler extends JPanel {
                 int row = e.getY() / COSTAT;
                 int col = e.getX() / COSTAT;
                 if (row >= 0 && row < DIMENSIO && col >= 0 && col < DIMENSIO) {
-                    // Toggle the occupation status of the cell
-                    t[row][col].setOcupada(!t[row][col].isOcupada());
-                    // Change the texture of the cell
-                    t[row][col].setTexture("CHOCOLATE.jpg");
-                    repaint();
+                    // Randomly select a Tetris piece
+                    TetrisPiece selectedPiece = updateNextPiece();
+
+                    // Calculate placement position
+                    int startX = col - selectedPiece.getWidth() / 2;
+                    int startY = row - selectedPiece.getHeight() / 2;
+
+                    // Check if placement is valid
+                    if (isValidPlacement(selectedPiece, startX, startY)) {
+                        // Place the piece
+                        placePiece(selectedPiece, startX, startY);
+                        repaint();
+                    }
                 }
             }
         });
+    }
+
+    //Metodo para escoger una pieza al azar
+    public TetrisPiece selectRandomPiece() {
+        TetrisPiece[] pieces = {new IPiece(), new JPiece(), new LPiece(), new OPiece(), new SPiece(), new TPiece(), new ZPiece()};
+        Random random = new Random();
+        int randomIndex = random.nextInt(pieces.length);
+
+        return pieces[randomIndex];
+    }
+    
+    private TetrisPiece updateNextPiece() {
+        
+        currentPiece = nextPiece;
+        nextPiece = selectRandomPiece();
+        previewPanel.setPreviewPiece(nextPiece); // Update the preview panel with the next piece
+        previewPanel.repaint();
+        
+        return currentPiece;
+    }
+
+    // Metodo que verifica si se puede colocar una pieza de tetris en la casilla presionada
+    private boolean isValidPlacement(TetrisPiece piece, int startX, int startY) {
+        boolean[][] shape = piece.getShape();
+        int pieceWidth = piece.getWidth();
+        int pieceHeight = piece.getHeight();
+
+        // Verificamos si la pieza no sobresale del tablero
+        if (startX < 0 || startY < 0 || startX + pieceWidth > DIMENSIO || startY + pieceHeight > DIMENSIO) {
+            return false;
+        }
+
+        // Verificamos si la pieza no colisiona con otra
+        for (int i = 0; i < pieceHeight; i++) {
+            for (int j = 0; j < pieceWidth; j++) {
+                if (shape[i][j]) {
+                    int row = startY + i;
+                    int col = startX + j;
+                    if (row >= 0 && row < DIMENSIO && col >= 0 && col < DIMENSIO && t[row][col].isOcupada()) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        // Si no se atasca en los metodos previos es que si se puede colocar
+        return true;
+    }
+
+    //Metodo para colocar las pieces de tetris en el tablero
+    private void placePiece(TetrisPiece piece, int startX, int startY) {
+        int pieceWidth = piece.getWidth();
+        int pieceHeight = piece.getHeight();
+        boolean[][] shape = piece.getShape();
+
+        for (int i = 0; i < pieceHeight; i++) {
+            for (int j = 0; j < pieceWidth; j++) {
+                if (shape[i][j]) {
+                    int row = startY + i;
+                    int col = startX + j;
+                    if (row >= 0 && row < DIMENSIO && col >= 0 && col < DIMENSIO) {
+                        t[row][col].setOcupada(true);
+                        // Cambiar la textura a casilla ocupada
+                        t[row][col].setTexture("CHOCOLATE.jpg");
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -59,5 +145,5 @@ public class Tauler extends JPanel {
     public Dimension getPreferredSize() {
         return new Dimension(MAXIM, MAXIM);
     }
-}
 
+}

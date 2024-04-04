@@ -1,13 +1,25 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package tetris;
 
-/**
- *
- * @author Usuari
- */
-public class TetrisPiece {
-    
+import java.awt.Color;
+
+
+// Aquí se encuentra la clase abstracta que define lo que es una pieza de tetris
+public abstract class TetrisPiece {
+    private boolean[][] shape;
+
+    public TetrisPiece(boolean[][] shape) {
+        this.shape = shape;
+    }
+
+    public boolean[][] getShape() {
+        return shape;
+    }
+
+    public int getWidth() {
+        return shape[0].length;
+    }
+
+    public int getHeight() {
+        return shape.length;
+    }
 }
