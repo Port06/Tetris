@@ -43,16 +43,17 @@ public class Tauler extends JPanel {
                 int row = e.getY() / COSTAT;
                 int col = e.getX() / COSTAT;
                 if (row >= 0 && row < DIMENSIO && col >= 0 && col < DIMENSIO) {
-                    // Randomly select a Tetris piece
+
+                    // Se llama al metodo de seleccionde pieza aleatoria
                     TetrisPiece selectedPiece = updateNextPiece();
 
-                    // Calculate placement position
+                    // Calculamos la posicion para colocar dicha pieza
                     int startX = col - selectedPiece.getWidth() / 2;
                     int startY = row - selectedPiece.getHeight() / 2;
 
-                    // Check if placement is valid
+                    // Verificamos si el posicionamiento es valido
                     if (isValidPlacement(selectedPiece, startX, startY)) {
-                        // Place the piece
+                        // Colocamos la pieza
                         placePiece(selectedPiece, startX, startY);
                         repaint();
                     }
@@ -134,9 +135,18 @@ public class Tauler extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
+        // Draw the Tetris board
         for (int i = 0; i < DIMENSIO; i++) {
             for (int j = 0; j < DIMENSIO; j++) {
-                t[i][j].paintComponent(g2d);
+                if (t[i][j].isOcupada()) {
+                    // Draw the texture image at the appropriate location
+                    Image textureImage = t[i][j].getTexture().getImage();
+                    g2d.drawImage(textureImage, (int) t[i][j].getRec().getX(), (int) t[i][j].getRec().getY(), COSTAT, COSTAT, null);
+                } else {
+                    // Draw empty squares
+                    g2d.setColor(Color.WHITE);
+                    g2d.fill(t[i][j].getRec());
+                }
             }
         }
     }

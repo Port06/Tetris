@@ -19,7 +19,7 @@ class Casella {
         if (ocupada && texture != null) {
             g2d.drawImage(texture.getImage(), (int) rec.getX(), (int) rec.getY(), (int) rec.getWidth(), (int) rec.getHeight(), null);
         } else {
-            g2d.setColor(Color.WHITE); // Set color to white for empty tiles
+            g2d.setColor(Color.WHITE); // Definimos el color a blanco cuando la casilla esta vacia
             g2d.fill(rec);
         }
     }
@@ -39,7 +39,8 @@ class Casella {
     public ImageIcon getTexture() {
         return texture;
     }
-
+    
+    //Metodo que cambia la textura de la casilla
     public void setTexture(String textureFileName) {
         this.texture = new ImageIcon(getClass().getResource("/CHOCOLATE.jpg"));
     }
