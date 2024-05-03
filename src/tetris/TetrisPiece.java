@@ -1,7 +1,5 @@
 package tetris;
 
-import java.awt.Color;
-
 
 // Aquí se encuentra la clase abstracta que define lo que es una pieza de tetris
 public abstract class TetrisPiece {

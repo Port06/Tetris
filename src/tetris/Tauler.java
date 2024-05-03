@@ -20,9 +20,7 @@ public class Tauler extends JPanel {
     public Tauler(PreviewPanel previewPanel) {
         
         this.previewPanel = previewPanel;
-        currentPiece = selectRandomPiece();
         nextPiece = selectRandomPiece();
-        
         
         t = new Casella[DIMENSIO][DIMENSIO];
         int y = 0;
@@ -43,18 +41,21 @@ public class Tauler extends JPanel {
                 int row = e.getY() / COSTAT;
                 int col = e.getX() / COSTAT;
                 if (row >= 0 && row < DIMENSIO && col >= 0 && col < DIMENSIO) {
+                    // Calculate placement position
+                    int startX = col - nextPiece.getWidth() / 2;
+                    int startY = row - nextPiece.getHeight() / 2;
 
-                    // Se llama al metodo de seleccionde pieza aleatoria
-                    TetrisPiece selectedPiece = updateNextPiece();
-
-                    // Calculamos la posicion para colocar dicha pieza
-                    int startX = col - selectedPiece.getWidth() / 2;
-                    int startY = row - selectedPiece.getHeight() / 2;
-
-                    // Verificamos si el posicionamiento es valido
-                    if (isValidPlacement(selectedPiece, startX, startY)) {
-                        // Colocamos la pieza
-                        placePiece(selectedPiece, startX, startY);
+                    // Check if placement is valid
+                    if (isValidPlacement(nextPiece, startX, startY)) {
+                        // Place the piece
+                        placePiece(nextPiece, startX, startY);
+                        // Update the current piece
+                        currentPiece = nextPiece;
+                        // Generate the next piece
+                        nextPiece = selectRandomPiece();
+                        // Update the preview panel with the next piece
+                        previewPanel.setPreviewPiece(nextPiece);
+                        previewPanel.repaint();
                         repaint();
                     }
                 }
@@ -69,16 +70,6 @@ public class Tauler extends JPanel {
         int randomIndex = random.nextInt(pieces.length);
 
         return pieces[randomIndex];
-    }
-    
-    private TetrisPiece updateNextPiece() {
-        
-        currentPiece = nextPiece;
-        nextPiece = selectRandomPiece();
-        previewPanel.setPreviewPiece(nextPiece); // Update the preview panel with the next piece
-        previewPanel.repaint();
-        
-        return currentPiece;
     }
 
     // Metodo que verifica si se puede colocar una pieza de tetris en la casilla presionada

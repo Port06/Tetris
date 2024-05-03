@@ -4,18 +4,15 @@ import javax.swing.*;
 import java.awt.*;
 
 public class PreviewPanel extends JPanel {
+
     private TetrisPiece previewPiece;
-    public static final int DIMENSIO_PREVIEW = 3;
-    private static final int MAXIM_PREVIEW = 150; // Maximum size of the preview panel
-    private static final int SQUARE_SIZE_PREVIEW = MAXIM_PREVIEW / DIMENSIO_PREVIEW;
 
     public PreviewPanel() {
-        setPreferredSize(new Dimension(100, 100)); // Adjust size as needed
+        setPreferredSize(new Dimension(120, 120)); // Set the preferred size
     }
 
     public void setPreviewPiece(TetrisPiece piece) {
         this.previewPiece = piece;
-        repaint();
     }
 
     @Override
@@ -23,17 +20,21 @@ public class PreviewPanel extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
-        // Draw the preview piece board
-        for (int i = 0; i < DIMENSIO_PREVIEW; i++) {
-            for (int j = 0; j < DIMENSIO_PREVIEW; j++) {
-                if (previewPiece != null && previewPiece.getShape()[i][j]) {
-                    // Draw the texture image at the appropriate location
-                    Image textureImage = new ImageIcon(getClass().getResource("/CHOCOLATE.jpg")).getImage();
-                    g2d.drawImage(textureImage, j * SQUARE_SIZE_PREVIEW, i * SQUARE_SIZE_PREVIEW, SQUARE_SIZE_PREVIEW, SQUARE_SIZE_PREVIEW, null);
-                } else {
-                    // Draw empty squares
-                    g2d.setColor(Color.WHITE);
-                    g2d.fillRect(j * SQUARE_SIZE_PREVIEW, i * SQUARE_SIZE_PREVIEW, SQUARE_SIZE_PREVIEW, SQUARE_SIZE_PREVIEW);
+        if (previewPiece != null) {
+            boolean[][] shape = previewPiece.getShape();
+            int pieceWidth = previewPiece.getWidth();
+            int pieceHeight = previewPiece.getHeight();
+
+            int startX = (getWidth() - pieceWidth * 20) / 2; // Center horizontally
+            int startY = (getHeight() - pieceHeight * 20) / 2; // Center vertically
+
+            for (int i = 0; i < pieceHeight; i++) {
+                for (int j = 0; j < pieceWidth; j++) {
+                    if (shape[i][j]) {
+                        ImageIcon texture = new ImageIcon(getClass().getResource("/CHOCOLATE.jpg")); // Load texture from resource
+                        Image textureImage = texture.getImage();
+                        g2d.drawImage(textureImage, startX + j * 20, startY + i * 20, 20, 20, null); // Draw the texture
+                    }
                 }
             }
         }
