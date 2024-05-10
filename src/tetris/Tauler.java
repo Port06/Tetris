@@ -6,8 +6,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.util.Random;
+import java.awt.event.*;
 
-public class Tauler extends JPanel {
+public class Tauler extends JPanel implements KeyListener {
 
     public static final int DIMENSIO = 20;
     private static final int MAXIM = 500;
@@ -15,12 +16,19 @@ public class Tauler extends JPanel {
     private Casella[][] t;
     private PreviewPanel previewPanel;
     private TetrisPiece currentPiece;
-    private TetrisPiece nextPiece;
+    
+    private TetrisGame tetrisGame;
 
-    public Tauler(PreviewPanel previewPanel) {
+    public Tauler(PreviewPanel previewPanel, TetrisGame tetrisGame) {
         
+        this.tetrisGame = tetrisGame;
         this.previewPanel = previewPanel;
-        nextPiece = selectRandomPiece();
+         
+        currentPiece = tetrisGame.selectRandomPiece();
+        previewPanel.setPreviewPiece(currentPiece);
+        
+        setFocusable(true); // Allow panel to get focus for keyboard events
+        addKeyListener(this); // Register the KeyListener
         
         t = new Casella[DIMENSIO][DIMENSIO];
         int y = 0;
@@ -42,19 +50,28 @@ public class Tauler extends JPanel {
                 int col = e.getX() / COSTAT;
                 if (row >= 0 && row < DIMENSIO && col >= 0 && col < DIMENSIO) {
                     // Calculate placement position
-                    int startX = col - nextPiece.getWidth() / 2;
-                    int startY = row - nextPiece.getHeight() / 2;
+                    int startX = col - currentPiece.getWidth() / 2;
+                    int startY = row - currentPiece.getHeight() / 2;
 
                     // Check if placement is valid
-                    if (isValidPlacement(nextPiece, startX, startY)) {
+                    if (isValidPlacement(currentPiece, startX, startY)) {
                         // Place the piece
-                        placePiece(nextPiece, startX, startY);
-                        // Update the current piece
-                        currentPiece = nextPiece;
-                        // Generate the next piece
-                        nextPiece = selectRandomPiece();
+                        placePiece(currentPiece, startX, startY);
+                        
+                        // Check for full rows or columns
+                        for (int i = 0; i < DIMENSIO; i++) {
+                            if (isRowFilled(i)) {
+                                removeRow(i);
+                            }
+                            if (isColumnFilled(i)) {
+                                removeColumn(i);
+                            }
+                        }
+                        
+                        // Update for a new piece
+                        currentPiece = tetrisGame.selectRandomPiece();
                         // Update the preview panel with the next piece
-                        previewPanel.setPreviewPiece(nextPiece);
+                        previewPanel.setPreviewPiece(currentPiece);
                         previewPanel.repaint();
                         repaint();
                     }
@@ -62,15 +79,36 @@ public class Tauler extends JPanel {
             }
         });
     }
+    
+        @Override
+        public void keyPressed(KeyEvent e) {
+            int keyCode = e.getKeyCode();
+            if (keyCode == KeyEvent.VK_D) { // Rotate clockwise when 'd' is pressed
+                    if (currentPiece != null) {
+                        currentPiece.rotateClockwise();
+                        previewPanel.setPreviewPiece(currentPiece);
+                        previewPanel.repaint();
+                        repaint(); // Repaint the game board to reflect the changes
+                    }
+            } else if (keyCode == KeyEvent.VK_A) { // Rotate counterclockwise when 'a' is pressed
+                if (currentPiece != null) {
+                    currentPiece.rotateCounterClockwise();
+                    previewPanel.setPreviewPiece(currentPiece);
+                    previewPanel.repaint();
+                    repaint(); // Repaint the game board to reflect the changes
+                }
+            } 
+        }
 
-    //Metodo para escoger una pieza al azar
-    public TetrisPiece selectRandomPiece() {
-        TetrisPiece[] pieces = {new IPiece(), new JPiece(), new LPiece(), new OPiece(), new SPiece(), new TPiece(), new ZPiece()};
-        Random random = new Random();
-        int randomIndex = random.nextInt(pieces.length);
+        @Override
+        public void keyReleased(KeyEvent e) {
+            // Empty method
+        }
 
-        return pieces[randomIndex];
-    }
+        @Override
+        public void keyTyped(KeyEvent e) {
+            // Empty method
+        }
 
     // Metodo que verifica si se puede colocar una pieza de tetris en la casilla presionada
     private boolean isValidPlacement(TetrisPiece piece, int startX, int startY) {
@@ -115,6 +153,9 @@ public class Tauler extends JPanel {
                         t[row][col].setOcupada(true);
                         // Cambiar la textura a casilla ocupada
                         t[row][col].setTexture("CHOCOLATE.jpg");
+                        //Reiniciar la rotación del tipo de pieza
+                        piece.resetRotationState();
+                        
                     }
                 }
             }
@@ -145,6 +186,49 @@ public class Tauler extends JPanel {
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(MAXIM, MAXIM);
+    }
+    
+    // Remove a full row
+    private void removeRow(int row) {
+            for (int j = 0; j < DIMENSIO; j++) {
+                t[row][j].setOcupada(false);
+                t[row][j].setTexture("/LIBRE.jpg"); // Pass the file name directly
+            }
+        // Clear the top row
+        for (int j = 0; j < DIMENSIO; j++) {
+            t[0][j].setEmpty(true);
+        }
+    }
+
+    // Remove a full column
+    private void removeColumn(int col) {
+
+            for (int i = 0; i < DIMENSIO; i++) {
+                t[i][col].setOcupada(false);
+                t[i][col].setTexture("/LIBRE.jpg"); // Pass the file name directly
+            }
+        // Clear the rightmost column
+        for (int i = 0; i < DIMENSIO; i++) {
+            t[i][DIMENSIO - 1].setEmpty(true);
+        }
+    }
+    
+    private boolean isRowFilled(int row) {
+        for (int j = 0; j < DIMENSIO; j++) {
+            if (!t[row][j].isOcupada()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean isColumnFilled(int col) {
+        for (int i = 0; i < DIMENSIO; i++) {
+            if (!t[i][col].isOcupada()) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

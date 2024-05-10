@@ -9,9 +9,9 @@ public class Tetris {
         // Create a frame to hold the Tetris panel
         JFrame frame = new JFrame("Tetris");
 
-        // Create an instance of the Tetris board
         PreviewPanel previewPanel = new PreviewPanel(); // Create previewPanel first
-        Tauler tauler = new Tauler(previewPanel); // Pass the previewPanel instance
+        TetrisGame tetrisGame = new TetrisGame(); // Create TetrisGame instance
+        Tauler tauler = new Tauler(previewPanel, tetrisGame); // Pass the previewPanel and TetrisGame instances
 
         // Load the texture image for the preview panel
         ImageIcon fondoTexture = new ImageIcon(Tetris.class.getResource("/FONDO.jpg"));
@@ -65,8 +65,5 @@ public class Tetris {
         frame.setLocationRelativeTo(null); // Center the frame on the screen
         frame.setVisible(true);
 
-        // Update the preview panel with the next piece
-        TetrisPiece nextPiece = tauler.selectRandomPiece();
-        previewPanel.setPreviewPiece(nextPiece);
     }
 }

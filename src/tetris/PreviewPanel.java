@@ -13,6 +13,7 @@ public class PreviewPanel extends JPanel {
 
     public void setPreviewPiece(TetrisPiece piece) {
         this.previewPiece = piece;
+        repaint();
     }
 
     @Override
@@ -37,6 +38,20 @@ public class PreviewPanel extends JPanel {
                     }
                 }
             }
+        }
+    }
+    
+    public void rotateClockwise() {
+        if (previewPiece != null) {
+            previewPiece.rotateClockwise();
+            repaint();
+        }
+    }
+
+    public void rotateCounterClockwise() {
+        if (previewPiece != null) {
+            previewPiece.rotateCounterClockwise();
+            repaint();
         }
     }
 }

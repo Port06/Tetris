@@ -10,6 +10,7 @@ class Casella {
     private boolean ocupada;
 
     public Casella(Rectangle2D.Float r, boolean ocu) {
+        
         this.rec = r;
         this.ocupada = ocu;
         this.texture = new ImageIcon(getClass().getResource("/LIBRE.jpg"));
@@ -34,6 +35,10 @@ class Casella {
 
     public void setOcupada(boolean ocupada) {
         this.ocupada = ocupada;
+    }
+    
+    public void setEmpty(boolean ocupada) {
+        this.ocupada = !ocupada;
     }
 
     public ImageIcon getTexture() {
