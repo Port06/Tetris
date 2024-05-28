@@ -18,7 +18,7 @@ public class TetrisPiece {
         this.rotationState = 0; // Inicialmente sin rotación
     }
 
-    private static final String PIECES_FILE = "C:/Users/Usuari/OneDrive/Documentos/NetBeansProjects/Tetris/assets/pieces.txt";
+    private static final String PIECES_FILE = "assets/pieces.txt";
 
     public static List<TetrisPiece> createPieces() {
         List<TetrisPiece> pieces = new ArrayList<>();
@@ -62,6 +62,10 @@ public class TetrisPiece {
     public boolean[][] getShape() {
         return shape;
     }
+    
+    public void setShape(boolean[][] shape) {
+        this.shape = shape;
+    }
 
     public int getWidth() {
         return shape[0].length;
@@ -69,6 +73,22 @@ public class TetrisPiece {
 
     public int getHeight() {
         return shape.length;
+    }
+    
+    public void setWidth(int width) {
+        int currentHeight = getHeight();
+        boolean[][] newShape = new boolean[currentHeight][width];
+        for (int i = 0; i < currentHeight; i++) {
+            System.arraycopy(shape[i], 0, newShape[i], 0, Math.min(shape[i].length, width));
+        }
+        this.shape = newShape;
+    }
+
+    public void setHeight(int height) {
+        int currentWidth = getWidth();
+        boolean[][] newShape = new boolean[height][currentWidth];
+        System.arraycopy(shape, 0, newShape, 0, Math.min(shape.length, height));
+        this.shape = newShape;
     }
     
     public void resetRotationState() {
