@@ -6,14 +6,21 @@ import java.awt.*;
 public class PreviewPanel extends JPanel {
 
     private TetrisPiece previewPiece;
+    private TetrisGame tetrisGame;
 
-    public PreviewPanel() {
+    public PreviewPanel(TetrisGame tetrisGame) {
+        this.tetrisGame = tetrisGame;
         setPreferredSize(new Dimension(120, 120)); // Set the preferred size
+        this.previewPiece = tetrisGame.getCurrentPiece();
     }
 
-    public void setPreviewPiece(TetrisPiece piece) {
-        this.previewPiece = piece;
+    public void setPreviewPiece(TetrisPiece previewPiece) {
+        this.previewPiece = previewPiece;
         repaint();
+    }
+    
+    public TetrisPiece getPreviewPiece() {
+        return previewPiece;
     }
 
     @Override

@@ -58,7 +58,7 @@ public class TetrisPiece {
         }
         return copy;
     }
-
+    
     public boolean[][] getShape() {
         return shape;
     }
@@ -117,5 +117,105 @@ public class TetrisPiece {
             }
             shape = rotatedShape;
         }
+    }
+    
+    // Truncate right side if needed and if the columns to be truncated are empty
+    public boolean[][] truncateRight(boolean[][] shape, int startX, int pieceWidth, int pieceHeight, int DIMENSIO) {
+        int truncateColumns = Math.max(startX + pieceWidth - DIMENSIO, 0);
+        if (truncateColumns > 0) {
+            boolean isEmpty = true;
+            for (int i = 0; i < pieceHeight; i++) {
+                for (int j = pieceWidth - truncateColumns; j < pieceWidth; j++) {
+                    if (shape[i][j]) {
+                        isEmpty = false;
+                        break;
+                    }
+                }
+                if (!isEmpty) break;
+            }
+            if (isEmpty) {
+                int newWidth = pieceWidth - truncateColumns;
+                boolean[][] newShape = new boolean[pieceHeight][newWidth];
+                for (int i = 0; i < pieceHeight; i++) {
+                    System.arraycopy(shape[i], 0, newShape[i], 0, newWidth);
+                }
+                return newShape;
+            }
+        }
+        return shape;
+    }
+
+    // Truncate bottom side if needed and if the rows to be truncated are empty
+    public boolean[][] truncateBottom(boolean[][] shape, int startY, int pieceWidth, int pieceHeight, int DIMENSIO) {
+        int truncateRows = Math.max(startY + pieceHeight - DIMENSIO, 0);
+        if (truncateRows > 0) {
+            boolean isEmpty = true;
+            for (int i = pieceHeight - truncateRows; i < pieceHeight; i++) {
+                for (int j = 0; j < pieceWidth; j++) {
+                    if (shape[i][j]) {
+                        isEmpty = false;
+                        break;
+                    }
+                }
+                if (!isEmpty) break;
+            }
+            if (isEmpty) {
+                int newHeight = pieceHeight - truncateRows;
+                boolean[][] newShape = new boolean[newHeight][pieceWidth];
+                System.arraycopy(shape, 0, newShape, 0, newHeight);
+                return newShape;
+            }
+        }
+        return shape;
+    }
+
+    // Truncate left side if needed and if the columns to be truncated are empty
+    public boolean[][] truncateLeft(boolean[][] shape, int startX, int pieceWidth, int pieceHeight) {
+        int truncateColumnsLeft = Math.max(-startX, 0);
+        if (truncateColumnsLeft > 0) {
+            boolean isEmpty = true;
+            for (int i = 0; i < pieceHeight; i++) {
+                for (int j = 0; j < truncateColumnsLeft; j++) {
+                    if (shape[i][j]) {
+                        isEmpty = false;
+                        break;
+                    }
+                }
+                if (!isEmpty) break;
+            }
+            if (isEmpty) {
+                int newWidth = pieceWidth - truncateColumnsLeft;
+                boolean[][] newShape = new boolean[pieceHeight][newWidth];
+                for (int i = 0; i < pieceHeight; i++) {
+                    System.arraycopy(shape[i], truncateColumnsLeft, newShape[i], 0, newWidth);
+                }
+                return newShape;
+            }
+        }
+        return shape;
+    }
+
+    // Truncate top side if needed and if the rows to be truncated are empty
+    public boolean[][] truncateTop(boolean[][] shape, int startY, int pieceWidth, int pieceHeight) {
+        int truncateRowsTop = Math.max(-startY, 0);
+        if (truncateRowsTop > 0) {
+            boolean isEmpty = true;
+            for (int i = 0; i < truncateRowsTop; i++) {
+                for (int j = 0; j < pieceWidth; j++) {
+                    if (shape[i][j]) {
+                        isEmpty = false;
+                        break;
+                    }
+                }
+                if (!isEmpty) break;
+            }
+            if (isEmpty) {
+                int newHeight = pieceHeight - truncateRowsTop;
+                boolean[][] newShape = new boolean[newHeight][pieceWidth];
+                System.arraycopy(shape, truncateRowsTop, newShape, 0, newHeight);
+                return newShape;
+            }
+        }
+        return shape;
     }
 }

@@ -13,24 +13,24 @@ public class Tauler extends JPanel implements KeyListener {
     private static final int MAXIM = 500;
     private static final int COSTAT = MAXIM / DIMENSIO;
     private Casella[][] t;
-    private PreviewPanel previewPanel;
-    private TetrisPiece currentPiece;
-    private TetrisPiece draggedPiece;
-    private TetrisGame tetrisGame;
     private Point mousePosition;
     
+    
+    //Variables aditionales para acceder a otras clases
+    private TetrisGame tetrisGame;
+    private PreviewPanel previewPanel;
 
     public Tauler(PreviewPanel previewPanel, TetrisGame tetrisGame) {
         
-        this.tetrisGame = tetrisGame;
         this.previewPanel = previewPanel;
-         
-        currentPiece = tetrisGame.selectRandomPiece();
-        previewPanel.setPreviewPiece(currentPiece);
+        this.tetrisGame = tetrisGame;
         
         setFocusable(true); // Allow panel to get focus for keyboard events
         addKeyListener(this); // Register the KeyListener
+        setFocusTraversalKeysEnabled(false); // Disable focus traversal keys
         
+        
+        //Creacion de las casillas y del tablero
         t = new Casella[DIMENSIO][DIMENSIO];
         int y = 0;
 
@@ -43,16 +43,10 @@ public class Tauler extends JPanel implements KeyListener {
             }
             y += COSTAT;
         }
-
-        previewPanel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                draggedPiece = currentPiece; // Create a copy of the current piece
-                updateMousePosition(e);
-                repaint();
-            }
-        });
-
+        
+        
+        //Creacion de los metodos necesarios que utilizan el raton
+        //para poder arastrar piezas por el tablero asi como colocarlas
         previewPanel.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
@@ -64,18 +58,18 @@ public class Tauler extends JPanel implements KeyListener {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (draggedPiece != null) {
+                if (tetrisGame.getDraggedPiece() != null) {
                     int row = e.getY() / COSTAT;
                     int col = e.getX() / COSTAT;
 
-                    // Calculate placement position without adjusting for borders
-                    int startX = col - draggedPiece.getWidth() / 2;
-                    int startY = row - draggedPiece.getHeight() / 2;
+                    // Snap to the nearest grid position
+                    int startX = Math.round((float)col - tetrisGame.getDraggedPiece().getWidth() / 2.0f);
+                    int startY = Math.round((float)row - tetrisGame.getDraggedPiece().getHeight() / 2.0f);
 
                     // Check if placement is valid
-                    if (isValidPlacement(draggedPiece, startX, startY)) {
+                    if (isValidPlacement(tetrisGame.getDraggedPiece(), startX, startY)) {
                         // Place the piece
-                        placePiece(draggedPiece, startX, startY);
+                        placePiece(tetrisGame.getDraggedPiece(), startX, startY);
 
                         // Check for full rows or columns
                         for (int i = 0; i < DIMENSIO; i++) {
@@ -87,22 +81,29 @@ public class Tauler extends JPanel implements KeyListener {
                             }
                         }
 
-                        // Update for a new piece
-                        currentPiece = tetrisGame.selectRandomPiece();
-                        // Update the preview panel with the next piece
-                        previewPanel.setPreviewPiece(currentPiece);
-                        previewPanel.repaint();
-                        repaint();
+                        tetrisGame.updatePiece();
+                        
+                    } else {
+                        System.out.println("Invalid placement");
                     }
-                    draggedPiece = null; // Clear the dragged piece
+                    tetrisGame.setDraggedPiece(null); // Clear the dragged piece
                     repaint();
                 }
             }
         });
-
+        
         addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
+                updateMousePosition(e);
+                repaint();
+            }
+        });
+        
+        previewPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                tetrisGame.setCurrentPieceToDragged(); // Create a copy of the current piece
                 updateMousePosition(e);
                 repaint();
             }
@@ -113,16 +114,16 @@ public class Tauler extends JPanel implements KeyListener {
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
         if (keyCode == KeyEvent.VK_D) { // Rotate clockwise when 'd' is pressed
-            if (currentPiece != null) {
-                currentPiece.rotateClockwise();
-                previewPanel.setPreviewPiece(currentPiece);
+            if (tetrisGame.getCurrentPiece() != null) {
+                tetrisGame.getCurrentPiece().rotateClockwise();
+                previewPanel.setPreviewPiece(tetrisGame.getCurrentPiece());
                 previewPanel.repaint();
                 repaint(); // Repaint the game board to reflect the changes
             }
         } else if (keyCode == KeyEvent.VK_A) { // Rotate counterclockwise when 'a' is pressed
-            if (currentPiece != null) {
-                currentPiece.rotateCounterClockwise();
-                previewPanel.setPreviewPiece(currentPiece);
+            if (tetrisGame.getCurrentPiece() != null) {
+                tetrisGame.getCurrentPiece().rotateCounterClockwise();
+                previewPanel.setPreviewPiece(tetrisGame.getCurrentPiece());
                 previewPanel.repaint();
                 repaint(); // Repaint the game board to reflect the changes
             }
@@ -140,7 +141,7 @@ public class Tauler extends JPanel implements KeyListener {
     }
     
     // Method to update the mouse position
-    private void updateMousePosition(MouseEvent e) {
+    public void updateMousePosition(MouseEvent e) {
         mousePosition = e.getPoint();
     }
 
@@ -178,26 +179,7 @@ public class Tauler extends JPanel implements KeyListener {
         }
 
         return true;
-    }
-
-    private boolean isRowEmpty(int row, int pieceWidth, int startX) {
-        for (int j = startX; j < startX + pieceWidth && j < DIMENSIO; j++) {
-            if (j >= 0 && t[row][j].isOcupada()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean isColumnEmpty(int col, int pieceHeight, int startY) {
-        for (int i = startY; i < startY + pieceHeight && i < DIMENSIO; i++) {
-            if (i >= 0 && t[i][col].isOcupada()) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
+    }   
 
     // Method to place the Tetris pieces on the board
     private void placePiece(TetrisPiece piece, int startX, int startY) {
@@ -244,10 +226,10 @@ public class Tauler extends JPanel implements KeyListener {
         }
 
         // Draw the dragged piece following the mouse
-        if (draggedPiece != null && mousePosition != null) {
-            boolean[][] shape = draggedPiece.getShape();
-            int pieceWidth = draggedPiece.getWidth();
-            int pieceHeight = draggedPiece.getHeight();
+        if (tetrisGame.getDraggedPiece() != null && mousePosition != null) {
+            boolean[][] shape = tetrisGame.getDraggedPiece().getShape();
+            int pieceWidth = tetrisGame.getDraggedPiece().getWidth();
+            int pieceHeight = tetrisGame.getDraggedPiece().getHeight();
             int startX = mousePosition.x - (pieceWidth * COSTAT) / 2;
             int startY = mousePosition.y - (pieceHeight * COSTAT) / 2;
 
@@ -275,16 +257,16 @@ public class Tauler extends JPanel implements KeyListener {
         printShape(shape);
 
         // Truncate right side if needed and if the columns to be truncated are empty
-        shape = truncateRight(shape, start.x, pieceWidth, pieceHeight, DIMENSIO);
+        shape = piece.truncateRight(shape, start.x, pieceWidth, pieceHeight, DIMENSIO);
 
         // Truncate bottom side if needed and if the rows to be truncated are empty
-        shape = truncateBottom(shape, start.y, pieceWidth, pieceHeight, DIMENSIO);
+        shape = piece.truncateBottom(shape, start.y, pieceWidth, pieceHeight, DIMENSIO);
 
         // Truncate left side if needed and if the columns to be truncated are empty
-        shape = truncateLeft(shape, start.x, pieceWidth, pieceHeight);
+        shape = piece.truncateLeft(shape, start.x, pieceWidth, pieceHeight);
 
         // Truncate top side if needed and if the rows to be truncated are empty
-        shape = truncateTop(shape, start.y, pieceWidth, pieceHeight);
+        shape = piece.truncateTop(shape, start.y, pieceWidth, pieceHeight);
 
         // Print truncated shape for debugging
         System.out.println("Truncated shape:");
@@ -306,114 +288,6 @@ public class Tauler extends JPanel implements KeyListener {
         }
     }
 
-    // Truncate right side if needed and if the columns to be truncated are empty
-    private boolean[][] truncateRight(boolean[][] shape, int startX, int pieceWidth, int pieceHeight, int DIMENSIO) {
-        int truncateColumns = Math.max(startX + pieceWidth - DIMENSIO, 0);
-        if (truncateColumns > 0) {
-            boolean isEmpty = true;
-            for (int i = 0; i < pieceHeight; i++) {
-                for (int j = pieceWidth - truncateColumns; j < pieceWidth; j++) {
-                    if (shape[i][j]) {
-                        isEmpty = false;
-                        break;
-                    }
-                }
-                if (!isEmpty) break;
-            }
-            if (isEmpty) {
-                int newWidth = pieceWidth - truncateColumns;
-                boolean[][] newShape = new boolean[pieceHeight][newWidth];
-                for (int i = 0; i < pieceHeight; i++) {
-                    System.arraycopy(shape[i], 0, newShape[i], 0, newWidth);
-                    // Print truncated shape for debugging
-                    System.out.println("Truncated shape:");
-                    printShape(shape);
-                }
-                return newShape;
-            }
-        }
-        
-        // Print truncated shape for debugging
-        System.out.println("Truncated shape:");
-        printShape(shape);
-        
-        return shape;
-    }
-
-    // Truncate bottom side if needed and if the rows to be truncated are empty
-    private boolean[][] truncateBottom(boolean[][] shape, int startY, int pieceWidth, int pieceHeight, int DIMENSIO) {
-        int truncateRows = Math.max(startY + pieceHeight - DIMENSIO, 0);
-        if (truncateRows > 0) {
-            boolean isEmpty = true;
-            for (int i = pieceHeight - truncateRows; i < pieceHeight; i++) {
-                for (int j = 0; j < pieceWidth; j++) {
-                    if (shape[i][j]) {
-                        isEmpty = false;
-                        break;
-                    }
-                }
-                if (!isEmpty) break;
-            }
-            if (isEmpty) {
-                int newHeight = pieceHeight - truncateRows;
-                boolean[][] newShape = new boolean[newHeight][pieceWidth];
-                System.arraycopy(shape, 0, newShape, 0, newHeight);
-                return newShape;
-            }
-        }
-        return shape;
-    }
-
-    // Truncate left side if needed and if the columns to be truncated are empty
-    private boolean[][] truncateLeft(boolean[][] shape, int startX, int pieceWidth, int pieceHeight) {
-        int truncateColumnsLeft = Math.max(-startX, 0);
-        if (truncateColumnsLeft > 0) {
-            boolean isEmpty = true;
-            for (int i = 0; i < pieceHeight; i++) {
-                for (int j = 0; j < truncateColumnsLeft; j++) {
-                    if (shape[i][j]) {
-                        isEmpty = false;
-                        break;
-                    }
-                }
-                if (!isEmpty) break;
-            }
-            if (isEmpty) {
-                int newWidth = pieceWidth - truncateColumnsLeft;
-                boolean[][] newShape = new boolean[pieceHeight][newWidth];
-                for (int i = 0; i < pieceHeight; i++) {
-                    System.arraycopy(shape[i], truncateColumnsLeft, newShape[i], 0, newWidth);
-                }
-                return newShape;
-            }
-        }
-        return shape;
-    }
-
-    // Truncate top side if needed and if the rows to be truncated are empty
-    private boolean[][] truncateTop(boolean[][] shape, int startY, int pieceWidth, int pieceHeight) {
-        int truncateRowsTop = Math.max(-startY, 0);
-        if (truncateRowsTop > 0) {
-            boolean isEmpty = true;
-            for (int i = 0; i < truncateRowsTop; i++) {
-                for (int j = 0; j < pieceWidth; j++) {
-                    if (shape[i][j]) {
-                        isEmpty = false;
-                        break;
-                    }
-                }
-                if (!isEmpty) break;
-            }
-            if (isEmpty) {
-                int newHeight = pieceHeight - truncateRowsTop;
-                boolean[][] newShape = new boolean[newHeight][pieceWidth];
-                System.arraycopy(shape, truncateRowsTop, newShape, 0, newHeight);
-                return newShape;
-            }
-        }
-        return shape;
-    }
-
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(MAXIM, MAXIM);
@@ -425,10 +299,6 @@ public class Tauler extends JPanel implements KeyListener {
             t[row][j].setOcupada(false);
             t[row][j].setTexture("/LIBRE.jpg"); // Pass the file name directly
         }
-        // Clear the top row
-        for (int j = 0; j < DIMENSIO; j++) {
-            t[0][j].setEmpty(true);
-        }
     }
 
     // Remove a full column
@@ -436,10 +306,6 @@ public class Tauler extends JPanel implements KeyListener {
         for (int i = 0; i < DIMENSIO; i++) {
             t[i][col].setOcupada(false);
             t[i][col].setTexture("/LIBRE.jpg"); // Pass the file name directly
-        }
-        // Clear the rightmost column
-        for (int i = 0; i < DIMENSIO; i++) {
-            t[i][DIMENSIO - 1].setEmpty(true);
         }
     }
     
