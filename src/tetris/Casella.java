@@ -8,12 +8,15 @@ class Casella {
     private Rectangle2D.Float rec;
     private ImageIcon texture;
     private boolean ocupada;
+    
+    private String ocuppiedCellTexture;
 
     public Casella(Rectangle2D.Float r, boolean ocu) {
         
         this.rec = r;
         this.ocupada = ocu;
         this.texture = new ImageIcon(getClass().getResource("/LIBRE.jpg"));
+        this.ocuppiedCellTexture = "/CHOCOLATE.jpg";
     }
 
     public void paintComponent(Graphics2D g2d) {
@@ -45,9 +48,13 @@ class Casella {
         return texture;
     }
     
+    public void setOcuppiedCellTexture(String ocuppiedCellTexture) {
+        this.ocuppiedCellTexture = ocuppiedCellTexture;
+    }
+    
     //Metodo que cambia la textura de la casilla
     public void setTexture(String textureFileName) {
-        this.texture = new ImageIcon(getClass().getResource("/CHOCOLATE.jpg"));
+        this.texture = new ImageIcon(getClass().getResource(ocuppiedCellTexture));
     }
 }
 

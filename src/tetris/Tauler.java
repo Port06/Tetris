@@ -19,15 +19,20 @@ public class Tauler extends JPanel implements KeyListener {
     //Variables aditionales para acceder a otras clases
     private TetrisGame tetrisGame;
     private PreviewPanel previewPanel;
+    private Tetris tetris;
 
-    public Tauler(PreviewPanel previewPanel, TetrisGame tetrisGame) {
+    public Tauler(PreviewPanel previewPanel, TetrisGame tetrisGame, Tetris tetris) {
         
         this.previewPanel = previewPanel;
         this.tetrisGame = tetrisGame;
+        this.tetris = tetris;
         
         setFocusable(true); // Allow panel to get focus for keyboard events
         addKeyListener(this); // Register the KeyListener
         setFocusTraversalKeysEnabled(false); // Disable focus traversal keys
+        
+        // Ensure focus is requested when the component is shown
+        SwingUtilities.invokeLater(() -> requestFocusInWindow());
         
         
         //Creacion de las casillas y del tablero
@@ -298,6 +303,7 @@ public class Tauler extends JPanel implements KeyListener {
         for (int j = 0; j < DIMENSIO; j++) {
             t[row][j].setOcupada(false);
             t[row][j].setTexture("/LIBRE.jpg"); // Pass the file name directly
+            tetris.increaseScore(); //Se recompensa el jugador
         }
     }
 
@@ -306,6 +312,7 @@ public class Tauler extends JPanel implements KeyListener {
         for (int i = 0; i < DIMENSIO; i++) {
             t[i][col].setOcupada(false);
             t[i][col].setTexture("/LIBRE.jpg"); // Pass the file name directly
+            tetris.increaseScore(); //Se penaliza el jugador
         }
     }
     
