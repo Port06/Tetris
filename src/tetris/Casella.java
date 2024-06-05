@@ -52,6 +52,10 @@ class Casella {
         this.ocuppiedCellTexture = ocuppiedCellTexture;
     }
     
+    public String getOcuppiedCellTexture() {
+        return ocuppiedCellTexture;
+    }
+    
     //Metodo que cambia la textura de la casilla
     public void setTexture(String textureFileName) {
         this.texture = new ImageIcon(getClass().getResource(ocuppiedCellTexture));

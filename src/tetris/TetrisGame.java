@@ -2,8 +2,6 @@ package tetris;
 
 import java.util.Random;
 import java.util.List;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class TetrisGame {
     
