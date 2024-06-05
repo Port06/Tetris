@@ -3,3 +3,45 @@ BIENVENIDO AL TETRIS UIB PRACTICA FINAL 2024
 ESTE PROYECTO HA SIDO REALIZADO POR 
 LOAN BESNARDEAU LOGEAIS Y MIQUEL BERNARDINO ADROVER
 ---------------------------------------------------------------------------------
+
+INSTRUCCIONES:
+
+-Iniciar partida:
+
+Se pide el nombre al jugador (25 caracteres maximo) y se inicia una
+partida.
+	
+El jugador debe hacer click en el panel de la pieza siguiente situado a
+la derecha. Tras hacer click debe mover el raton por el tablero y volver
+a dar click en las casillas en las que quiere colocar dicha pieza. 
+(se debe colocar relativamente preciso).
+
+El objetivo consiste en completar filas y columnas para obtener puntos.
+Se pueden usar los botones haciendo click para cambiar de forma que permite 
+refrescar la pieza a una nueva retirando puntos y el de rotar ficha que 
+permite girar la ficha (tambien se puede realizar usando las teclas a y d)
+retirando tambien puntos.
+
+La partida finaliza cuando el temporizador finaliza. Entonces aparece la
+puntuacion resultante y se almacena los resultados en el historial.
+
+-Configuracion:
+
+El jugador puede  acceder a la configuracion especifica y al tiempo de
+partida.
+
+Al editar la configuracion especificase pueden ajustar las puntuaciones 
+cambiando el valor en las casillas de texto asi como la textura de las
+casillas rellenas del tablero.
+
+AL editar el tiempo de partida hay que asignar un valor positivo entero 
+mayor a 0 para poder jugar.
+
+-Historial:
+
+Portal que permite ver el registro de las partidas realizadas almacenadas
+en partidasTetrisUIB.dat (fichero serializado).
+
+
+-Estas opciones estan disponibles tanto en los iconos como en los botones
+

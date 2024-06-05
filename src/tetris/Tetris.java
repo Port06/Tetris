@@ -30,9 +30,7 @@ public class Tetris {
     private static JPanel topPanel;
     
     private static List<JButton> buttonsAndIcons;
-    
-    private static final int MAX_NAME_LENGTH = 25;  //Aquí se define la longitud
-                                                    //máxima del nombre del jugador
+    private static boolean isGameActive = false;
     
     //Fichero de la serializacion
     private static final String GAME_DATA_FILE = "assets/partidasTetrisUIB.dat";
@@ -171,11 +169,17 @@ public class Tetris {
                 System.err.println("Found a null button in buttonsAndIcons list.");
                 continue;
             }
-            // Check for "Salir" button or icon and skip enabling/disabling them
             if ("Salir".equals(button.getText()) || button.getIcon() == salirIconButton.getIcon()) {
-                button.setEnabled(true); // Ensure "Salir" button is always enabled
+                button.setEnabled(true);
             } else {
                 button.setEnabled(enabled);
+                if (!enabled) {
+                    button.addActionListener(e -> {
+                        if (isGameActive) {
+                            JOptionPane.showMessageDialog(frame, "¡Espera a que acabe la partida antes!", "Partida en Curso", JOptionPane.WARNING_MESSAGE);
+                        }
+                    });
+                }
             }
         }
     }
@@ -239,39 +243,43 @@ public class Tetris {
         informacionIconButton.setBackground(Color.BLACK);
         salirIconButton.setBackground(Color.BLACK);
 
-        nuevaPartidaIconButton.setBorderPainted(false);
-        configuracionIconButton.setBorderPainted(false);
-        historialIconButton.setBorderPainted(false);
-        informacionIconButton.setBorderPainted(false);
-        salirIconButton.setBorderPainted(false);
-        nuevaPartidaIconButton.setFocusPainted(false);
-        configuracionIconButton.setFocusPainted(false);
-        historialIconButton.setFocusPainted(false);
-        informacionIconButton.setFocusPainted(false);
-        salirIconButton.setFocusPainted(false);
-
-        nuevaPartidaIconButton.addActionListener(e -> {
-            setButtonsAndIconsEnabled(false);
-            promptForPlayerName();
-            setButtonsAndIconsEnabled(true);
-        });
-        configuracionIconButton.addActionListener(e -> {
-            setButtonsAndIconsEnabled(false);
-            openConfigurationWindow();
-            setButtonsAndIconsEnabled(true);
-        });
-        informacionIconButton.addActionListener(e -> {
-            setButtonsAndIconsEnabled(false);
-            showInfoWindow();
-            setButtonsAndIconsEnabled(true);
-        });
-        salirIconButton.addActionListener(e -> System.exit(0));
+        configureIconButton(nuevaPartidaIconButton);
+        configureIconButton(configuracionIconButton);
+        configureIconButton(historialIconButton);
+        configureIconButton(informacionIconButton);
+        configureIconButton(salirIconButton);
 
         topPanel.add(nuevaPartidaIconButton);
         topPanel.add(configuracionIconButton);
         topPanel.add(historialIconButton);
         topPanel.add(informacionIconButton);
         topPanel.add(salirIconButton);
+
+        nuevaPartidaIconButton.addActionListener(e -> {
+            setButtonsAndIconsEnabled(false);
+            promptForPlayerName();
+            setButtonsAndIconsEnabled(true);
+        });
+
+        configuracionIconButton.addActionListener(e -> {
+            setButtonsAndIconsEnabled(false);
+            openConfigurationWindow();
+            setButtonsAndIconsEnabled(true);
+        });
+
+        salirIconButton.addActionListener(e -> System.exit(0));
+
+        informacionIconButton.addActionListener(e -> {
+            setButtonsAndIconsEnabled(false);
+            showInfoWindow();
+            setButtonsAndIconsEnabled(true);
+        });
+
+        historialIconButton.addActionListener(e -> {
+            setButtonsAndIconsEnabled(false);
+            showGameHistoryWindow();
+            setButtonsAndIconsEnabled(true);
+        });
 
         return topPanel;
     }
@@ -284,6 +292,9 @@ public class Tetris {
         
         // Disable all buttons except exit
          SwingUtilities.invokeLater(() -> setButtonsAndIconsEnabled(false));
+         
+        //Definir la partida como activa
+        isGameActive = true;
               
         // Initializamos los componentes del juego restante
         previewPanel = new PreviewPanel(tetrisGame);
@@ -428,13 +439,19 @@ public class Tetris {
         button.setBorder(BorderFactory.createLineBorder(Color.WHITE));
         button.setPreferredSize(new Dimension(100, 100));
     }
+    
+    private static void configureIconButton(JButton button) {
+        button.setPreferredSize(new Dimension(50, 50));
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createEmptyBorder());
+    }
 
     private static void promptForPlayerName() {
         String playerName = JOptionPane.showInputDialog(frame, "Enter your name:", "Player Name", JOptionPane.PLAIN_MESSAGE);
 
         if (playerName != null && !playerName.trim().isEmpty()) {
-            if (playerName.length() > MAX_NAME_LENGTH) {
-                playerName = playerName.substring(0, MAX_NAME_LENGTH);  // Truncate the name if it exceeds the max length
+            if (playerName.length() > tetrisGame.getPlayerNameMaxLength()) {
+                playerName = playerName.substring(0, tetrisGame.getPlayerNameMaxLength());  // Truncate the name if it exceeds the max length
             }
             tetrisGame.setPlayerName(playerName);
             startGame();
@@ -457,6 +474,9 @@ public class Tetris {
     
     //Metodo que realiza la logica del final de partida
     private static void endGame() {
+        
+        //Definir la partida como acabada
+        isGameActive = false;
         
         //Se crea la instancia de una partida para el registro.
         //Esto solo ocurre en caso de que se haya completado una partida.
@@ -615,20 +635,31 @@ public class Tetris {
         }
     }
 
-    // Time configuration method
+    //Metodo para la configuracion del tiempo
     private static void showModifyGameTimeConfiguration() {
         JPanel panel = new JPanel(new GridLayout(0, 2));
         panel.add(new JLabel("Tiempo de Partida:"));
         JTextField tiempoPartidaField = new JTextField("" + tetrisGame.getTotalGameTime());
         panel.add(tiempoPartidaField);
 
-        int result = JOptionPane.showConfirmDialog(frame, panel, "MODIFICAR TIEMPO PARTIDA", JOptionPane.OK_CANCEL_OPTION);
-        if (result == JOptionPane.OK_OPTION) {
-            try {
-                int tiempoPartida = Integer.parseInt(tiempoPartidaField.getText());
-                tetrisGame.setTotalGameTime(tiempoPartida);
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(frame, "Por favor ingrese un valor válido para el tiempo de partida.", "Error", JOptionPane.ERROR_MESSAGE);
+        boolean validInput = false;
+
+        while (!validInput) {
+            int result = JOptionPane.showConfirmDialog(frame, panel, "MODIFICAR TIEMPO PARTIDA", JOptionPane.OK_CANCEL_OPTION);
+            if (result == JOptionPane.OK_OPTION) {
+                try {
+                    int tiempoPartida = Integer.parseInt(tiempoPartidaField.getText());
+                    if (tiempoPartida > 0) {
+                        tetrisGame.setTotalGameTime(tiempoPartida);
+                        validInput = true;
+                    } else {
+                        JOptionPane.showMessageDialog(frame, "El tiempo de partida debe ser mayor que 0.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(frame, "Por favor ingrese un valor válido para el tiempo de partida.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                break; // User canceled the operation
             }
         }
     }

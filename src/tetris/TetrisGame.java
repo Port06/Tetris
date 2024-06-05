@@ -17,6 +17,8 @@ public class TetrisGame {
     private static int removeCellCost = 1;
     private static int gameTime;
     private static int totalGameTime = 100;
+    private static int playerNameMaxLength = 25;  //Aquí se define la longitud
+                                                    //máxima del nombre del jugador
     
     // Variables adicionales para acceder a otras clases
     private PreviewPanel previewPanel;
@@ -30,14 +32,7 @@ public class TetrisGame {
     
     //A partir de aquí se encuentran los getters y setters
     
-    public void setPreviewPanel(PreviewPanel previewPanel) {
-        this.previewPanel = previewPanel;
-    }
-    
-    public void setTauler(Tauler tauler) {
-        this.tauler = tauler;
-    }
-    
+    //Los getters
     public TetrisPiece getCurrentPiece() {
         return currentPiece;
     }
@@ -56,6 +51,10 @@ public class TetrisGame {
     
     public String getPlayerName() {
         return playerName;
+    }
+    
+    public int getPlayerNameMaxLength() {
+        return playerNameMaxLength;
     }
     
     public int getPlayerScore() {
@@ -82,8 +81,17 @@ public class TetrisGame {
         return totalGameTime;
     }
     
+    //Los setters
     public void setDraggedPiece(TetrisPiece draggedPiece) {
         this.draggedPiece = draggedPiece;
+    }
+    
+    public void setPreviewPanel(PreviewPanel previewPanel) {
+        this.previewPanel = previewPanel;
+    }
+    
+    public void setTauler(Tauler tauler) {
+        this.tauler = tauler;
     }
     
     public void setCurrentPieceToDragged() {
@@ -92,6 +100,10 @@ public class TetrisGame {
     
     public void setPlayerName(String playerName) {
         this.playerName = playerName;
+    }
+    
+    public void setPlayerNameMaxLength(int playerNameMaxLength) {
+        this.playerNameMaxLength = playerNameMaxLength;
     }
     
     public void setPlayerScore(int playerScore) {
