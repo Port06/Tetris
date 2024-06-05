@@ -140,6 +140,7 @@ public class TetrisGame {
         return availablePieces.get(randomIndex);
     }
     
+    //Metodo de la actualizacion de piezas
     public void updatePiece() {
         // Update for a new piece
         currentPiece = selectRandomPiece();

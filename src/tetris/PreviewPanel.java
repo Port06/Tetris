@@ -7,9 +7,11 @@ public class PreviewPanel extends JPanel {
 
     private TetrisPiece previewPiece;
     private TetrisGame tetrisGame;
+    private Casella casella;
 
-    public PreviewPanel(TetrisGame tetrisGame) {
+    public PreviewPanel(TetrisGame tetrisGame, Casella casella) {
         this.tetrisGame = tetrisGame;
+        this.casella = casella;
         setPreferredSize(new Dimension(120, 120)); // Set the preferred size
         this.previewPiece = tetrisGame.getCurrentPiece();
     }
@@ -39,7 +41,7 @@ public class PreviewPanel extends JPanel {
             for (int i = 0; i < pieceHeight; i++) {
                 for (int j = 0; j < pieceWidth; j++) {
                     if (shape[i][j]) {
-                        ImageIcon texture = new ImageIcon(getClass().getResource("/CHOCOLATE.jpg")); // Load texture from resource
+                        ImageIcon texture = new ImageIcon(getClass().getResource(casella.getOcuppiedCellTexture())); // Load texture from resource
                         Image textureImage = texture.getImage();
                         g2d.drawImage(textureImage, startX + j * 20, startY + i * 20, 20, 20, null); // Draw the texture
                     }

@@ -17,48 +17,12 @@ public class TetrisPiece {
         this.shape = shape;
         this.rotationState = 0; // Inicialmente sin rotación
     }
-
+    
+    //Fichero para definir las piezas
     private static final String PIECES_FILE = "assets/pieces.txt";
-
-    public static List<TetrisPiece> createPieces() {
-        List<TetrisPiece> pieces = new ArrayList<>();
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(PIECES_FILE));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                TetrisPiece piece = parsePiece(line);
-                if (piece != null) {
-                    pieces.add(piece);
-                }
-            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return pieces;
-    }
-
-    private static TetrisPiece parsePiece(String line) {
-        String[] parts = line.split("\\s+");
-        String name = parts[0];
-        boolean[][] shape = new boolean[3][3];
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                shape[i][j] = Boolean.parseBoolean(parts[i * 3 + j + 1]);
-            }
-        }
-        return new TetrisPiece(name, shape);
-    }
     
-    // Método para copiar una matriz de forma
-    private boolean[][] copyShape(boolean[][] shape) {
-        boolean[][] copy = new boolean[shape.length][shape[0].length];
-        for (int i = 0; i < shape.length; i++) {
-            System.arraycopy(shape[i], 0, copy[i], 0, shape[i].length);
-        }
-        return copy;
-    }
     
+    //Getters y setters
     public boolean[][] getShape() {
         return shape;
     }
@@ -91,6 +55,48 @@ public class TetrisPiece {
         this.shape = newShape;
     }
     
+    //Otros metodos de la clase
+    
+    //Metodo de creacion de piezas a partir del fichero donde se definen
+    public static List<TetrisPiece> createPieces() {
+        List<TetrisPiece> pieces = new ArrayList<>();
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(PIECES_FILE));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                TetrisPiece piece = parsePiece(line);
+                if (piece != null) {
+                    pieces.add(piece);
+                }
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return pieces;
+    }
+    
+    private static TetrisPiece parsePiece(String line) {
+        String[] parts = line.split("\\s+");
+        String name = parts[0];
+        boolean[][] shape = new boolean[3][3];
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                shape[i][j] = Boolean.parseBoolean(parts[i * 3 + j + 1]);
+            }
+        }
+        return new TetrisPiece(name, shape);
+    }
+    
+    // Método para copiar una matriz de forma
+    private boolean[][] copyShape(boolean[][] shape) {
+        boolean[][] copy = new boolean[shape.length][shape[0].length];
+        for (int i = 0; i < shape.length; i++) {
+            System.arraycopy(shape[i], 0, copy[i], 0, shape[i].length);
+        }
+        return copy;
+    }
+    
     public void resetRotationState() {
         rotateShape(4 - rotationState); // Aplica la rotación inversa para restablecerla a su orientación original
         rotationState = 0; // Reinicia el estado de rotación a 0
@@ -106,7 +112,8 @@ public class TetrisPiece {
         rotationState = (rotationState + 3) % 4; // Decrementa el estado de rotación (módulo 4)
         rotateShape(3); // Aplica la rotación de la forma en sentido contrario
     }
-
+    
+    //Rotacion de la pieza en su matriz 3x3 segun el estado de rotacion
     private void rotateShape(int rotations) {
         for (int r = 0; r < rotations; r++) {
             boolean[][] rotatedShape = new boolean[shape[0].length][shape.length];
@@ -119,7 +126,7 @@ public class TetrisPiece {
         }
     }
     
-    // Truncate right side if needed and if the columns to be truncated are empty
+    //Metodo de truncamiento de la columna de la derecha si esta vacia
     public boolean[][] truncateRight(boolean[][] shape, int startX, int pieceWidth, int pieceHeight, int DIMENSIO) {
         int truncateColumns = Math.max(startX + pieceWidth - DIMENSIO, 0);
         if (truncateColumns > 0) {
@@ -145,7 +152,7 @@ public class TetrisPiece {
         return shape;
     }
 
-    // Truncate bottom side if needed and if the rows to be truncated are empty
+    //Metodo de truncamiento de la fila inferior si esta vacia
     public boolean[][] truncateBottom(boolean[][] shape, int startY, int pieceWidth, int pieceHeight, int DIMENSIO) {
         int truncateRows = Math.max(startY + pieceHeight - DIMENSIO, 0);
         if (truncateRows > 0) {
@@ -169,7 +176,7 @@ public class TetrisPiece {
         return shape;
     }
 
-    // Truncate left side if needed and if the columns to be truncated are empty
+    //Metodo de truncamiento de la columna de la izquierda si eta vacia
     public boolean[][] truncateLeft(boolean[][] shape, int startX, int pieceWidth, int pieceHeight) {
         int truncateColumnsLeft = Math.max(-startX, 0);
         if (truncateColumnsLeft > 0) {
@@ -195,7 +202,7 @@ public class TetrisPiece {
         return shape;
     }
 
-    // Truncate top side if needed and if the rows to be truncated are empty
+    //Metodo de trucnamiento de la fila de arriba si esta vacia
     public boolean[][] truncateTop(boolean[][] shape, int startY, int pieceWidth, int pieceHeight) {
         int truncateRowsTop = Math.max(-startY, 0);
         if (truncateRowsTop > 0) {

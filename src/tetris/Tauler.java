@@ -202,7 +202,7 @@ public class Tauler extends JPanel implements KeyListener {
                     int col = adjustedStart.x + j;
                     if (row >= 0 && row < DIMENSIO && col >= 0 && col < DIMENSIO) {
                         t[row][col].setOcupada(true);
-                        t[row][col].setTexture("CHOCOLATE.jpg");
+                        t[row][col].setTexture();
                     }
                 }
             }
@@ -302,7 +302,7 @@ public class Tauler extends JPanel implements KeyListener {
     private void removeRow(int row) {
         for (int j = 0; j < DIMENSIO; j++) {
             t[row][j].setOcupada(false);
-            t[row][j].setTexture("/LIBRE.jpg"); // Pass the file name directly
+            t[row][j].setTexture(); // Pass the file name directly
             tetris.increaseScore(); //Se recompensa el jugador
         }
     }
@@ -311,7 +311,7 @@ public class Tauler extends JPanel implements KeyListener {
     private void removeColumn(int col) {
         for (int i = 0; i < DIMENSIO; i++) {
             t[i][col].setOcupada(false);
-            t[i][col].setTexture("/LIBRE.jpg"); // Pass the file name directly
+            t[i][col].setTexture(); // Pass the file name directly
             tetris.increaseScore(); //Se penaliza el jugador
         }
     }

@@ -32,7 +32,8 @@ partida.
 
 Al editar la configuracion especificase pueden ajustar las puntuaciones 
 cambiando el valor en las casillas de texto asi como la textura de las
-casillas rellenas del tablero.
+casillas rellenas del tablero (solo hay que poner el nombre de la textura
+sin la extension ni las barras).
 
 AL editar el tiempo de partida hay que asignar un valor positivo entero 
 mayor a 0 para poder jugar.
@@ -44,4 +45,9 @@ en partidasTetrisUIB.dat (fichero serializado).
 
 
 -Estas opciones estan disponibles tanto en los iconos como en los botones
+
+
+-En el fichero pieces.txt se pueden definir las piezas con un nombre y
+las casillas ocupadas y vacias (true y false) de izquierda hacia la derecha 
+de arriba hacia abajo separado todo por espacios.
 

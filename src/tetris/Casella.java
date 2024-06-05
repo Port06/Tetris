@@ -7,27 +7,33 @@ import java.awt.geom.Rectangle2D;
 class Casella {
     private Rectangle2D.Float rec;
     private ImageIcon texture;
+    private ImageIcon textureOcu;
     private boolean ocupada;
     
-    private String ocuppiedCellTexture;
+    //Textura por defecto de una casilla rellena
+    private static String ocuppiedCellTexture = "/CHOCOLATE.jpg";
+    //Textura por defecto de una casilla
+    private String emptyCellTexture = "/LIBRE.jpg";
 
     public Casella(Rectangle2D.Float r, boolean ocu) {
         
         this.rec = r;
         this.ocupada = ocu;
-        this.texture = new ImageIcon(getClass().getResource("/LIBRE.jpg"));
-        this.ocuppiedCellTexture = "/CHOCOLATE.jpg";
+        
+        this.texture = new ImageIcon(getClass().getResource(emptyCellTexture));
+        this.textureOcu = new ImageIcon(getClass().getResource(ocuppiedCellTexture));
     }
-
+    
+    //Uso de la clase Grafics2D para el dibiju de los cuadrados (casillas)
     public void paintComponent(Graphics2D g2d) {
         if (ocupada && texture != null) {
-            g2d.drawImage(texture.getImage(), (int) rec.getX(), (int) rec.getY(), (int) rec.getWidth(), (int) rec.getHeight(), null);
+            g2d.drawImage(textureOcu.getImage(), (int) rec.getX(), (int) rec.getY(), (int) rec.getWidth(), (int) rec.getHeight(), null);
         } else {
-            g2d.setColor(Color.WHITE); // Definimos el color a blanco cuando la casilla esta vacia
-            g2d.fill(rec);
+            g2d.drawImage(texture.getImage(), (int) rec.getX(), (int) rec.getY(), (int) rec.getWidth(), (int) rec.getHeight(), null);
         }
     }
-
+    
+    //Getters y setters
     public Rectangle2D.Float getRec() {
         return rec;
     }
@@ -48,16 +54,16 @@ class Casella {
         return texture;
     }
     
-    public void setOcuppiedCellTexture(String ocuppiedCellTexture) {
-        this.ocuppiedCellTexture = ocuppiedCellTexture;
+    public static void setOcuppiedCellTexture(String ocuppiedCellTexture) {
+        Casella.ocuppiedCellTexture = ocuppiedCellTexture;
     }
-    
-    public String getOcuppiedCellTexture() {
+
+    public static String getOcuppiedCellTexture() {
         return ocuppiedCellTexture;
     }
     
-    //Metodo que cambia la textura de la casilla
-    public void setTexture(String textureFileName) {
+    //Metodo que cambia la textura de la casilla al rellenarla
+    public void setTexture() {
         this.texture = new ImageIcon(getClass().getResource(ocuppiedCellTexture));
     }
 }

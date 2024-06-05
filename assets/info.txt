@@ -32,7 +32,8 @@ partida.
 
 Al editar la configuracion especificase pueden ajustar las puntuaciones 
 cambiando el valor en las casillas de texto asi como la textura de las
-casillas rellenas del tablero.
+casillas rellenas del tablero (solo hay que poner el nombre de la textura
+sin la extension ni las barras).
 
 AL editar el tiempo de partida hay que asignar un valor positivo entero 
 mayor a 0 para poder jugar.
