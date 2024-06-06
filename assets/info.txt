@@ -45,6 +45,7 @@ en partidasTetrisUIB.dat (fichero serializado).
 
 
 -Estas opciones estan disponibles tanto en los iconos como en los botones
+asi como en el desplegable (se abre al darle al label menu).
 
 
 -En el fichero pieces.txt se pueden definir las piezas con un nombre y

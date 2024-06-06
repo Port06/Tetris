@@ -9,10 +9,13 @@ import java.io.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 //En esta clase ocure toda la lógica del menu principal y del menu de la partida
 //asi como las funcionalidades básicas relacionadas con lo menus en la interacción
 //de una partida
+
 public class Tetris {
     
     private static JFrame frame;
@@ -29,7 +32,7 @@ public class Tetris {
     private static JPanel sidePanel;
     private static JPanel topPanel;
     
-    private static List<JButton> buttonsAndIcons;
+    private static List<AbstractButton> buttonsAndIcons;
     private static boolean isGameActive = false;
     
     //Fichero de la serializacion
@@ -48,6 +51,12 @@ public class Tetris {
     private static JButton historialButton;
     private static JButton informacionButton;
     private static JButton salirButton;
+    
+    private static JMenuItem nuevaPartidaItem;
+    private static JMenuItem configuracionItem;
+    private static JMenuItem historialItem;
+    private static JMenuItem informacionItem;
+    private static JMenuItem salirItem;
     
     private static boolean isInfoWindowOpen = false;
 
@@ -135,17 +144,29 @@ public class Tetris {
 
     //Initializacion de los botones e iconos
     private static void initializeButtonsAndIcons() {
+        
+        //Botones
         nuevaPartidaButton = new JButton("Nueva Partida");
         configuracionButton = new JButton("Configuración");
         historialButton = new JButton("Historial");
         informacionButton = new JButton("Información");
         salirButton = new JButton("Salir");
-
+        
+        //Iconos
         nuevaPartidaIconButton = new JButton(new ImageIcon(Tetris.class.getResource("/iconoNuevaPartida.jpg")));
         configuracionIconButton = new JButton(new ImageIcon(Tetris.class.getResource("/iconoConfiguracion.jpg")));
         historialIconButton = new JButton(new ImageIcon(Tetris.class.getResource("/iconoHistorial.jpg")));
         informacionIconButton = new JButton(new ImageIcon(Tetris.class.getResource("/iconoInformacion.jpg")));
         salirIconButton = new JButton(new ImageIcon(Tetris.class.getResource("/iconoSalir.jpg")));
+        
+        //Items
+        nuevaPartidaItem = new JMenuItem("Nueva Partida");
+        configuracionItem = new JMenuItem("Configuración");
+        historialItem = new JMenuItem("Historial");
+        informacionItem = new JMenuItem("Información");
+        salirItem = new JMenuItem("Salir");
+        
+        
 
         buttonsAndIcons = new ArrayList<>();
 
@@ -160,12 +181,18 @@ public class Tetris {
         buttonsAndIcons.add(historialIconButton);
         buttonsAndIcons.add(informacionIconButton);
         buttonsAndIcons.add(salirIconButton);
+        
+        buttonsAndIcons.add(nuevaPartidaItem);
+        buttonsAndIcons.add(configuracionItem);
+        buttonsAndIcons.add(historialItem);
+        buttonsAndIcons.add(informacionItem);
+        buttonsAndIcons.add(salirItem);
     }
     
     //Metodo que permite activar y desactivar los botones que lo deberian permitir
     //esto exceptua el boton y icono de salir
     private static void setButtonsAndIconsEnabled(boolean enabled) {
-        for (JButton button : buttonsAndIcons) {
+        for (AbstractButton  button : buttonsAndIcons) {
             if (button == null) {
                 System.err.println("Found a null button in buttonsAndIcons list.");
                 continue;
@@ -184,6 +211,9 @@ public class Tetris {
             }
         }
     }
+    
+    
+    //Initializaciones de los paneles con botones e iconos a continuacion
     
     //Initializacion del panel de la izquierda
     private static JPanel createSidePanel() {
@@ -233,6 +263,8 @@ public class Tetris {
     
     //Initializacion del panel superior
     private static JPanel createTopPanel() {
+        
+        //Initializacion Iconos
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         topPanel.setBackground(Color.BLACK);
 
@@ -283,9 +315,56 @@ public class Tetris {
             showGameHistoryWindow();
             setButtonsAndIconsEnabled(true);
         });
+        
+        //Initializacion menu desplegable
+        JPopupMenu dropdownMenu = new JPopupMenu();
+
+        dropdownMenu.add(nuevaPartidaItem);
+        dropdownMenu.add(configuracionItem);
+        dropdownMenu.add(historialItem);
+        dropdownMenu.add(informacionItem);
+        dropdownMenu.add(salirItem);
+
+        nuevaPartidaItem.addActionListener(e -> {
+            setButtonsAndIconsEnabled(false);
+            promptForPlayerName();
+            setButtonsAndIconsEnabled(true);
+        });
+
+        configuracionItem.addActionListener(e -> {
+            setButtonsAndIconsEnabled(false);
+            openConfigurationWindow();
+            setButtonsAndIconsEnabled(true);
+        });
+
+        salirItem.addActionListener(e -> System.exit(0));
+
+        informacionItem.addActionListener(e -> {
+            setButtonsAndIconsEnabled(false);
+            showInfoWindow();
+            setButtonsAndIconsEnabled(true);
+        });
+
+        historialItem.addActionListener(e -> {
+            setButtonsAndIconsEnabled(false);
+            showGameHistoryWindow();
+            setButtonsAndIconsEnabled(true);
+        });
+
+        // Mostrar el menú desplegable al hacer clic en el label
+        menuLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                dropdownMenu.show(menuLabel, e.getX(), e.getY());
+            }
+        });
 
         return topPanel;
     }
+    
+    
+    
+    
     
     //Una vez hemos creado todos los paneles del programa, no encargamos de la
     //logica que requiere de los elementos del menu para funcionar correctamente
@@ -352,12 +431,21 @@ public class Tetris {
         mainPanel.setBackground(Color.BLACK);
         mainPanel.add(tauler);
 
+        //Carga de la imagen del panel derecho
+        Image fondoImage = new ImageIcon(Tetris.class.getResource("/FONDO.jpg")).getImage();
+        if (fondoImage == null) {
+            System.err.println("Fondo image not found.");
+        } else {
+            //Hacer nada
+        }
+
         JPanel previewMainPanel = new JPanel(new GridBagLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                Image fondoImage = new ImageIcon(Tetris.class.getResource("/FONDO.jpg")).getImage();
-                g.drawImage(fondoImage, 0, 0, getWidth(), getHeight(), this);
+                if (fondoImage != null) {
+                    g.drawImage(fondoImage, 0, 0, getWidth(), getHeight(), this);
+                }
             }
         };
 

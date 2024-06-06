@@ -3,6 +3,10 @@ package tetris;
 import java.util.Random;
 import java.util.List;
 
+
+//Esta classe define la mayoria de las acciones que ocurren en una partida
+//Estas incluyen las puntución, el nombre del jugador, la generación de piezas
+//y la actualizacion de piezas.
 public class TetrisGame {
     
     private List<TetrisPiece> availablePieces;

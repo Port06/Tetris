@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+//Clase que define el concepto de pieza de tetris.
+//Aqui se disena su forma, sus dimensiones y su rotacion
 public class TetrisPiece {
 
     public String name;

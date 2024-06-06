@@ -3,6 +3,9 @@ package tetris;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+
+//Clase partida que se instancia al acabar una partida para realizar la serializacion
+//de dicha instancia y almacenarlo asi en el historial
 public class Game implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -11,9 +14,6 @@ public class Game implements Serializable {
     private int gameTime;
     private int points;
 
-    // Constructor, getters, setters, and toString method as before
-
-    // Constructor
     public Game(String playerName, LocalDateTime dateTime, int gameTime, int points) {
         this.playerName = playerName;
         this.dateTime = dateTime;
@@ -38,7 +38,7 @@ public class Game implements Serializable {
         return points;
     }
 
-    // Setters (if needed)
+    // Setters
     public void setPlayerName(String playerName) {
         this.playerName = playerName;
     }

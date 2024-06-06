@@ -27,11 +27,11 @@ public class Tauler extends JPanel implements KeyListener {
         this.tetrisGame = tetrisGame;
         this.tetris = tetris;
         
-        setFocusable(true); // Allow panel to get focus for keyboard events
-        addKeyListener(this); // Register the KeyListener
-        setFocusTraversalKeysEnabled(false); // Disable focus traversal keys
+        setFocusable(true); //Permitir el uso de las teclas manteniedo el foco
+        addKeyListener(this); //Keylistener register
+        setFocusTraversalKeysEnabled(false);
         
-        // Ensure focus is requested when the component is shown
+        //Asegurar-se que el focus se mantiene al abrir la ventana
         SwingUtilities.invokeLater(() -> requestFocusInWindow());
         
         
@@ -67,16 +67,16 @@ public class Tauler extends JPanel implements KeyListener {
                     int row = e.getY() / COSTAT;
                     int col = e.getX() / COSTAT;
 
-                    // Snap to the nearest grid position
+                    //Se coloca a las casillas mas cercanas (snap to grid)
                     int startX = Math.round((float)col - tetrisGame.getDraggedPiece().getWidth() / 2.0f);
                     int startY = Math.round((float)row - tetrisGame.getDraggedPiece().getHeight() / 2.0f);
 
-                    // Check if placement is valid
+                    //Verificacion de si la posicion es valida
                     if (isValidPlacement(tetrisGame.getDraggedPiece(), startX, startY)) {
-                        // Place the piece
+                        //Se coloca la pieza
                         placePiece(tetrisGame.getDraggedPiece(), startX, startY);
 
-                        // Check for full rows or columns
+                        //Se verifica si se a completado una fila o columna
                         for (int i = 0; i < DIMENSIO; i++) {
                             if (isRowFilled(i)) {
                                 removeRow(i);
@@ -108,7 +108,7 @@ public class Tauler extends JPanel implements KeyListener {
         previewPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                tetrisGame.setCurrentPieceToDragged(); // Create a copy of the current piece
+                tetrisGame.setCurrentPieceToDragged(); //Se ccrea una copia de la pieza actual
                 updateMousePosition(e);
                 repaint();
             }
@@ -118,45 +118,46 @@ public class Tauler extends JPanel implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
-        if (keyCode == KeyEvent.VK_D) { // Rotate clockwise when 'd' is pressed
+        if (keyCode == KeyEvent.VK_D) { //Rotatcion horaria con la tecla "d"
             if (tetrisGame.getCurrentPiece() != null) {
                 tetrisGame.getCurrentPiece().rotateClockwise();
                 previewPanel.setPreviewPiece(tetrisGame.getCurrentPiece());
                 previewPanel.repaint();
-                repaint(); // Repaint the game board to reflect the changes
+                repaint(); //Actualizar el tablero
             }
-        } else if (keyCode == KeyEvent.VK_A) { // Rotate counterclockwise when 'a' is pressed
+        } else if (keyCode == KeyEvent.VK_A) { //Rotacion antihorario con la tecla "a"
             if (tetrisGame.getCurrentPiece() != null) {
                 tetrisGame.getCurrentPiece().rotateCounterClockwise();
                 previewPanel.setPreviewPiece(tetrisGame.getCurrentPiece());
                 previewPanel.repaint();
-                repaint(); // Repaint the game board to reflect the changes
+                repaint(); //Actualizar el tablero
             }
         } 
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        // Empty method
+        //Necesario para el funcionamiento pero esta vacio
     }
 
     @Override
     public void keyTyped(KeyEvent e) {
-        // Empty method
+        //Necesario para el funcionamiento pero esta vacio
     }
     
-    // Method to update the mouse position
+    //Actualizacionde la posicion del raton en la pantalla
     public void updateMousePosition(MouseEvent e) {
         mousePosition = e.getPoint();
     }
-
+    
+    //Metodo que comprueba si es una posicion valida
     private boolean isValidPlacement(TetrisPiece piece, int startX, int startY) {
         Point adjustedStart = new Point(startX, startY);
         piece = truncatePieceIfNeeded(piece, adjustedStart);
 
         if (piece == null) {
             System.out.println("Valid placement false");
-            return false; // Placement is invalid
+            return false; //Posicion invalida
         }
 
         boolean[][] shape = piece.getShape();
@@ -165,7 +166,7 @@ public class Tauler extends JPanel implements KeyListener {
 
         System.out.println(pieceWidth + " " + pieceHeight);
 
-        // Check for collisions with other pieces and bounds
+        //Verificacion de las coliciones con los bordes del tablero
         for (int i = 0; i < pieceHeight; i++) {
             for (int j = 0; j < pieceWidth; j++) {
                 if (shape[i][j]) {
@@ -186,7 +187,7 @@ public class Tauler extends JPanel implements KeyListener {
         return true;
     }   
 
-    // Method to place the Tetris pieces on the board
+    //Metodo que coloca la pieza en el tablero
     private void placePiece(TetrisPiece piece, int startX, int startY) {
         Point adjustedStart = new Point(startX, startY);
         piece = truncatePieceIfNeeded(piece, adjustedStart);
@@ -215,22 +216,22 @@ public class Tauler extends JPanel implements KeyListener {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
-        // Draw the Tetris board
+        //Se dibuja el tablero
         for (int i = 0; i < DIMENSIO; i++) {
             for (int j = 0; j < DIMENSIO; j++) {
                 if (t[i][j].isOcupada()) {
-                    // Draw the texture image at the appropriate location
+                    //Se dibuja la textura al lugar adecuado
                     Image textureImage = t[i][j].getTexture().getImage();
                     g2d.drawImage(textureImage, (int) t[i][j].getRec().getX(), (int) t[i][j].getRec().getY(), COSTAT, COSTAT, null);
                 } else {
-                    // Draw empty squares
+                    //Se dibujan las casillas vacias
                     g2d.setColor(Color.WHITE);
                     g2d.fill(t[i][j].getRec());
                 }
             }
         }
 
-        // Draw the dragged piece following the mouse
+        //Se dibuja la pieza que sigue el raton tras haberla seleccionado en el preview panel
         if (tetrisGame.getDraggedPiece() != null && mousePosition != null) {
             boolean[][] shape = tetrisGame.getDraggedPiece().getShape();
             int pieceWidth = tetrisGame.getDraggedPiece().getWidth();
@@ -243,7 +244,9 @@ public class Tauler extends JPanel implements KeyListener {
                     if (shape[i][j]) {
                         int x = startX + j * COSTAT;
                         int y = startY + i * COSTAT;
-                        g2d.setColor(new Color(255, 0, 0, 100)); // Semi-transparent red for the dragging piece
+                        g2d.setColor(new Color(255, 0, 0, 100));
+                        //Se define un color para la pieza usando rgb
+                        //Se puede cambiar segun las necessidades del programador      
                         g2d.fillRect(x, y, COSTAT, COSTAT);
                     }
                 }
@@ -257,25 +260,17 @@ public class Tauler extends JPanel implements KeyListener {
 
         boolean[][] shape = piece.getShape();
 
-        // Print original shape for debugging
-        System.out.println("Original shape:");
-        printShape(shape);
-
-        // Truncate right side if needed and if the columns to be truncated are empty
+        //Truncamiento de la parte derecha en caso necessario
         shape = piece.truncateRight(shape, start.x, pieceWidth, pieceHeight, DIMENSIO);
 
-        // Truncate bottom side if needed and if the rows to be truncated are empty
+        //Truncamiento de la parte inferior en caso necessario
         shape = piece.truncateBottom(shape, start.y, pieceWidth, pieceHeight, DIMENSIO);
 
-        // Truncate left side if needed and if the columns to be truncated are empty
+        //Truncamiento de la parte izquierda en caso necessario
         shape = piece.truncateLeft(shape, start.x, pieceWidth, pieceHeight);
 
-        // Truncate top side if needed and if the rows to be truncated are empty
+        //Truncamiento de la parte superior en caso necessario
         shape = piece.truncateTop(shape, start.y, pieceWidth, pieceHeight);
-
-        // Print truncated shape for debugging
-        System.out.println("Truncated shape:");
-        printShape(shape);
 
         piece.setShape(shape);
         piece.setWidth(shape[0].length);
@@ -284,21 +279,12 @@ public class Tauler extends JPanel implements KeyListener {
         return piece;
     }
 
-    private void printShape(boolean[][] shape) {
-        for (int i = 0; i < shape.length; i++) {
-            for (int j = 0; j < shape[i].length; j++) {
-                System.out.print(shape[i][j] ? "X" : " ");
-            }
-            System.out.println();
-        }
-    }
-
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(MAXIM, MAXIM);
     }
     
-    // Remove a full row
+    //Eliminacion de la fila rellena
     private void removeRow(int row) {
         for (int j = 0; j < DIMENSIO; j++) {
             t[row][j].setOcupada(false);
@@ -307,7 +293,7 @@ public class Tauler extends JPanel implements KeyListener {
         }
     }
 
-    // Remove a full column
+    //Eliminacion de la columna rellena
     private void removeColumn(int col) {
         for (int i = 0; i < DIMENSIO; i++) {
             t[i][col].setOcupada(false);
@@ -316,6 +302,7 @@ public class Tauler extends JPanel implements KeyListener {
         }
     }
     
+    //Comprobacion de una fila rellena
     private boolean isRowFilled(int row) {
         for (int j = 0; j < DIMENSIO; j++) {
             if (!t[row][j].isOcupada()) {
@@ -325,6 +312,7 @@ public class Tauler extends JPanel implements KeyListener {
         return true;
     }
     
+    //Comprobacion de una columna rellena
     private boolean isColumnFilled(int col) {
         for (int i = 0; i < DIMENSIO; i++) {
             if (!t[i][col].isOcupada()) {
