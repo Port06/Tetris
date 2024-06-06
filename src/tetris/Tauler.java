@@ -89,7 +89,8 @@ public class Tauler extends JPanel implements KeyListener {
                         tetrisGame.updatePiece();
                         
                     } else {
-                        System.out.println("Invalid placement");
+                        //Posicion invalida
+                        //No se hace nada
                     }
                     tetrisGame.setDraggedPiece(null); // Clear the dragged piece
                     repaint();
@@ -156,7 +157,6 @@ public class Tauler extends JPanel implements KeyListener {
         piece = truncatePieceIfNeeded(piece, adjustedStart);
 
         if (piece == null) {
-            System.out.println("Valid placement false");
             return false; //Posicion invalida
         }
 
@@ -164,7 +164,6 @@ public class Tauler extends JPanel implements KeyListener {
         int pieceWidth = piece.getWidth();
         int pieceHeight = piece.getHeight();
 
-        System.out.println(pieceWidth + " " + pieceHeight);
 
         //Verificacion de las coliciones con los bordes del tablero
         for (int i = 0; i < pieceHeight; i++) {
@@ -173,11 +172,11 @@ public class Tauler extends JPanel implements KeyListener {
                     int row = adjustedStart.y + i;
                     int col = adjustedStart.x + j;
                     if (row < 0 || row >= DIMENSIO || col < 0 || col >= DIMENSIO) {
-                        System.out.println("Valid placement false");
+                        //Posicion invalida
                         return false;
                     }
                     if (t[row][col].isOcupada()) {
-                        System.out.println("Valid placement false");
+                        //Posicion invalida
                         return false;
                     }
                 }

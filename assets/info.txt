@@ -6,6 +6,11 @@ LOAN BESNARDEAU LOGEAIS Y MIQUEL BERNARDINO ADROVER
 
 INSTRUCCIONES:
 
+-Assets del proyecto:
+
+Todos lo ficheros y texturas usadas para el programa se encuentran en 
+la carpeta assets del proyecto raiz
+
 -Iniciar partida:
 
 Se pide el nombre al jugador (25 caracteres maximo) y se inicia una

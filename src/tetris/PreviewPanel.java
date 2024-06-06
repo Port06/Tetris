@@ -10,12 +10,14 @@ public class PreviewPanel extends JPanel {
     private TetrisPiece previewPiece;
     private TetrisGame tetrisGame;
     private Casella casella;
+    private int verticalOffset = 17;
 
     public PreviewPanel(TetrisGame tetrisGame, Casella casella) {
         this.tetrisGame = tetrisGame;
         this.casella = casella;
         setPreferredSize(new Dimension(120, 120)); // Set the preferred size
         this.previewPiece = tetrisGame.getCurrentPiece();
+        setOpaque(false); // Make the panel transparent
     }
     
     //Getter y Setter necesarios
@@ -40,7 +42,7 @@ public class PreviewPanel extends JPanel {
             int pieceHeight = previewPiece.getHeight();
 
             int startX = (getWidth() - pieceWidth * 20) / 2; //Centrar horizontalmente
-            int startY = (getHeight() - pieceHeight * 20) / 2; //Centrar verticalmente
+            int startY = (getHeight() - pieceHeight * (20 + verticalOffset)) / 2; //Centrar verticalmente + un poco para centrarlo en el marco
 
             for (int i = 0; i < pieceHeight; i++) {
                 for (int j = 0; j < pieceWidth; j++) {

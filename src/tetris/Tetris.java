@@ -432,7 +432,7 @@ public class Tetris {
         mainPanel.add(tauler);
 
         //Carga de la imagen del panel derecho
-        Image fondoImage = new ImageIcon(Tetris.class.getResource("/FONDO.jpg")).getImage();
+        Image fondoImage = new ImageIcon(Tetris.class.getResource("/fondo.jpg")).getImage();
         if (fondoImage == null) {
             System.err.println("Fondo image not found.");
         } else {
@@ -599,7 +599,7 @@ public class Tetris {
         }
         
         //Se muestra el resultado al usuario
-        JOptionPane.showMessageDialog(frame, "Time's up! Your score: 0", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(frame, "Time's up! Your score: " + tetrisGame.getPlayerScore(), "Game Over", JOptionPane.INFORMATION_MESSAGE);
         showMainMenu();
     }
     
