@@ -11,7 +11,9 @@ public class Main {
     public static void main(String[] args) {
         tetris = new Tetris(); 
         SettingsLogic settingsLogic = new SettingsLogic(tetris.frame, tetris.getButtonsAndIcons(), tetris.getTetrisGame(), tetris.getGameMenu());
+        GameMenu gameMenu = new GameMenu();
         
-        settingsLogic.setTetris(tetris); // Setting the Tetris instance in SettingsLogic
+        settingsLogic.setTetris(tetris);
+        gameMenu.setTetris(tetris);
     }
 }

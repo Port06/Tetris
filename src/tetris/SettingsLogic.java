@@ -29,12 +29,12 @@ import java.util.List;
 public class SettingsLogic {
     
     //Atributos necessarios
-    private JFrame frame;
-    private List<AbstractButton> buttonsAndIcons;
-    private TetrisGame tetrisGame;
-    private GameMenu gameMenu;
-    private Casella casella;
-    private Tetris tetris;
+    private static JFrame frame;
+    private static List<AbstractButton> buttonsAndIcons;
+    private static TetrisGame tetrisGame;
+    private static GameMenu gameMenu;
+    private static Casella casella;
+    private static Tetris tetris;
     
 
     

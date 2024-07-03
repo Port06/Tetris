@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.io.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.event.MouseAdapter;
@@ -23,6 +22,7 @@ public class Tetris {
     private static TetrisGame tetrisGame;
     private static GameMenu gameMenu;
     private static Casella casella;
+    private static GameIO gameLoader;
     private static SettingsLogic settingsLogic;
     
     private static JPanel gamePanel;
@@ -31,10 +31,6 @@ public class Tetris {
     private static Timer gameTimer;
     private static JPanel sidePanel;
     private static JPanel topPanel;
-    
-    //Fichero de la serializacion para almacenar partidas
-    private static final String GAME_DATA_FILE = "assets/partidasTetrisUIB.dat";
-    private static List<Game> completedGames = new ArrayList<>();
     
     //Aquí se definen todos los botones de la interfaz
     private static JButton nuevaPartidaIconButton;
@@ -75,6 +71,7 @@ public class Tetris {
         //Creacion de las instancias de las classes
         tetrisGame = new TetrisGame();
         gameMenu = new GameMenu();
+        gameLoader = new GameIO();
         Rectangle2D.Float initialRect = new Rectangle2D.Float(0, 0, 20, 20);
         casella = new Casella(initialRect, false);
         
@@ -84,6 +81,18 @@ public class Tetris {
     // Getters for the private fields
     public List<AbstractButton> getButtonsAndIcons() {
         return buttonsAndIcons;
+    }
+    
+    public static JPanel getSidePanel() {
+        return sidePanel;
+    }
+    
+    public static JPanel getTopPanel() {
+        return topPanel;
+    }
+    
+    public static JTextField getScoreField() {
+        return scoreField;
     }
 
     public TetrisGame getTetrisGame() {
@@ -98,11 +107,21 @@ public class Tetris {
         return isInfoWindowOpen;
     }
     
+    public boolean getIsGameActive() {
+        return isGameActive;
+    }
+    
+    public void setIsGameActive(boolean isGameActive) {
+        this.isGameActive = isGameActive;
+    }
+    
     public void setIsInfoWindowOpen(boolean isInfoWindowOpen) {
         this.isInfoWindowOpen = isInfoWindowOpen;
     }
     
     
+    //A partir de aquí se genera los paneles con los botones, 
+    //iconos e items necesarios
     
     
     //Primeramente creamos los paneles 1 a 1 asi como el menu principal
@@ -115,25 +134,9 @@ public class Tetris {
         frame.setSize(WINDOWIDTH, WINDOWHEIGHT);
         frame.setMinimumSize(new Dimension(WINDOWIDTH, WINDOWHEIGHT));
         frame.setLocationRelativeTo(null);
-
-        // Inicializar la lista de juegos completados desde el archivo
-        File gameDataFile = new File(GAME_DATA_FILE);
-        if (gameDataFile.exists() && gameDataFile.length() > 0) {
-            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(GAME_DATA_FILE))) {
-                completedGames = (List<Game>) ois.readObject();
-            } catch (EOFException e) {
-                System.out.println("Reached end of file unexpectedly.");
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(frame, "Error loading game data. The file might be corrupt or incomplete.", "Error", JOptionPane.ERROR_MESSAGE);
-            } catch (FileNotFoundException e) {
-                System.out.println("Game data file not found, starting fresh.");
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(frame, "Error loading game data.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        } else {
-            System.out.println("Game data file not found or empty, starting fresh.");
-        }
+        
+        //Cargar las partidas del historial del fichero serializado
+        gameLoader.loadGameHistory();
 
         //Inicializar el menú
         showMainMenu();
@@ -230,31 +233,6 @@ public class Tetris {
         buttonsAndIcons.add(historialItem);
         buttonsAndIcons.add(informacionItem);
         buttonsAndIcons.add(salirItem);
-    }
-    
-    
-    
-    //Metodo que permite activar y desactivar los botones que lo deberian permitir
-    //esto exceptua el boton y icono de salir
-    public static void setButtonsAndIconsEnabled(boolean enabled) {
-        for (AbstractButton  button : buttonsAndIcons) {
-            if (button == null) {
-                System.err.println("Found a null button in buttonsAndIcons list.");
-                continue;
-            }
-            if ("Salir".equals(button.getText()) || button.getIcon() == salirIconButton.getIcon()) {
-                button.setEnabled(true);
-            } else {
-                button.setEnabled(enabled);
-                if (!enabled) {
-                    button.addActionListener(e -> {
-                        if (isGameActive) {
-                            JOptionPane.showMessageDialog(frame, "¡Espera a que acabe la partida antes!", "Partida en Curso", JOptionPane.WARNING_MESSAGE);
-                        }
-                    });
-                }
-            }
-        }
     }
     
     
@@ -416,49 +394,26 @@ public class Tetris {
         return topPanel;
     }
     
-    
-    
-    
-
-    
-    //PENDING PENDING
-    
-    
-    //Metodo que incrementa la puntuacion al retirar una fila o columna
-    public static void increaseScore() {
-        tetrisGame.setPlayerScore(tetrisGame.getPlayerScore() + tetrisGame.getRemoveCellCost());
-        scoreField.setText("Score: " + tetrisGame.getPlayerScore());
-    }
-    
-    //Metodo que realiza la logica del final de partida
-    private static void endGame() {
-        
-        //Definir la partida como acabada
-        isGameActive = false;
-        
-        //Se crea la instancia de una partida para el registro.
-        //Esto solo ocurre en caso de que se haya completado una partida.
-        //Es decir, si se sale de la partida a medias no se guardara
-        Game completedGame = new Game(
-            tetrisGame.getPlayerName(),
-            LocalDateTime.now(),
-            tetrisGame.getTotalGameTime() - tetrisGame.getGameTime(), // Total time played
-            tetrisGame.getPlayerScore()
-        );
-        
-        // Agregar el juego completado a la lista
-        completedGames.add(completedGame);
-        
-        //Se serializan las intancias creadas
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(GAME_DATA_FILE))) {
-            oos.writeObject(completedGames);
-        } catch (IOException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(frame, "Error saving game data.", "Error", JOptionPane.ERROR_MESSAGE);
+    //Metodo que permite activar y desactivar los botones que lo deberian permitir
+    //esto exceptua el boton y icono de salir
+    public static void setButtonsAndIconsEnabled(boolean enabled) {
+        for (AbstractButton  button : buttonsAndIcons) {
+            if (button == null) {
+                System.err.println("Found a null button in buttonsAndIcons list.");
+                continue;
+            }
+            if ("Salir".equals(button.getText()) || button.getIcon() == salirIconButton.getIcon()) {
+                button.setEnabled(true);
+            } else {
+                button.setEnabled(enabled);
+                if (!enabled) {
+                    button.addActionListener(e -> {
+                        if (isGameActive) {
+                            JOptionPane.showMessageDialog(frame, "¡Espera a que acabe la partida antes!", "Partida en Curso", JOptionPane.WARNING_MESSAGE);
+                        }
+                    });
+                }
+            }
         }
-        
-        //Se muestra el resultado al usuario
-        JOptionPane.showMessageDialog(frame, "Time's up! Your score: " + tetrisGame.getPlayerScore(), "Game Over", JOptionPane.INFORMATION_MESSAGE);
-        showMainMenu();
     }
 }

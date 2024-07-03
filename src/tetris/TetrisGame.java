@@ -25,8 +25,8 @@ public class TetrisGame {
                                                     //máxima del nombre del jugador
     
     // Variables adicionales para acceder a otras clases
-    private PreviewPanel previewPanel;
-    private Tauler tauler;
+    private static PreviewPanel previewPanel;
+    private static Tauler tauler;
 
     public TetrisGame() {
         // Cargar las piezas disponibles llamando al método createPieces de TetrisPiece
