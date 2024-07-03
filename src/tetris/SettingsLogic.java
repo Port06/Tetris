@@ -35,6 +35,7 @@ public class SettingsLogic {
     private static GameMenu gameMenu;
     private static Casella casella;
     private static Tetris tetris;
+    private static GameIO gameIO;
     
 
     
@@ -138,7 +139,7 @@ public class SettingsLogic {
         historyTextArea.setWrapStyleWord(true);
 
         StringBuilder historyText = new StringBuilder("Game History:\n");
-        for (Game game : tetris.getCompletedGames()) {
+        for (Game game : gameIO.getCompletedGames()) {
             historyText.append(game.toString()).append("\n");
         }
         historyTextArea.setText(historyText.toString());

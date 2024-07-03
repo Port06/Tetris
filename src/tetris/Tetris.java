@@ -24,6 +24,7 @@ public class Tetris {
     private static Casella casella;
     private static GameIO gameLoader;
     private static SettingsLogic settingsLogic;
+    private static GameIO gameIO;
     
     private static JPanel gamePanel;
     private static JTextField scoreField;
@@ -61,20 +62,19 @@ public class Tetris {
     private static boolean isGameActive = false;
 
 
-    public Tetris() {
-        
-        //Se aplaza la creación del manu tras haber instanciado las classes
-        //adecuandamente
-        SwingUtilities.invokeLater(Tetris::createAndShowGUI);
-        
-        
-        //Creacion de las instancias de las classes
+    public Tetris(GameIO gameIO) {
+        // Create instances of other classes
         tetrisGame = new TetrisGame();
         gameMenu = new GameMenu();
-        gameLoader = new GameIO();
+        this.gameIO = gameIO;
         Rectangle2D.Float initialRect = new Rectangle2D.Float(0, 0, 20, 20);
         casella = new Casella(initialRect, false);
-        
+
+        // Initialize the settings logic
+        settingsLogic = new SettingsLogic(frame, buttonsAndIcons, tetrisGame, gameMenu);
+
+        // Schedule a job for the event-dispatching thread to create and show the GUI
+        SwingUtilities.invokeLater(Tetris::createAndShowGUI);
     }
     
     //Getters y setters
@@ -136,7 +136,7 @@ public class Tetris {
         frame.setLocationRelativeTo(null);
         
         //Cargar las partidas del historial del fichero serializado
-        gameLoader.loadGameHistory();
+        gameIO.loadGameHistory();
 
         //Inicializar el menú
         showMainMenu();
@@ -149,7 +149,7 @@ public class Tetris {
     //Metodo que permite crear el menu principal de lproyaecto
     //con la initializacion de los botones y paneles asi como el fondo
     //del menu
-    private static void showMainMenu() {
+    public static void showMainMenu() {
         
         //Initializacion de los botones
         initializeButtonsAndIcons();

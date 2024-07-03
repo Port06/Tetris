@@ -13,10 +13,9 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-/**
- *
- * @author Usuari
- */
+//Clase encargada de leer i escribir del fichero serializado para crear objetos
+//en la clase game 
+
 public class GameIO {
     
     //Fichero de la serializacion para almacenar partidas

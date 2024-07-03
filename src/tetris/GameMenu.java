@@ -44,8 +44,9 @@ public class GameMenu {
     private static JPanel topPanel;
 
     // Method to initialize the Tetris instance
-    public void setTetris(Tetris tetris) {
+    public void setTetris(Tetris tetris, GameIO gameIO) {
         this.tetris = tetris;
+        this.gameIO = gameIO;
     }
     
     public static void startGame() {
