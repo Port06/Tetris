@@ -2,8 +2,6 @@ package tetris;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
 import java.io.*;
 import java.time.LocalDateTime;
@@ -18,27 +16,27 @@ import java.awt.event.MouseEvent;
 
 public class Tetris {
     
-    private static JFrame frame;
+    //Definición de los paneles y varibles de las otras classes para 
+    //poder estructurar la ventana
+    public static JFrame frame;
+    
     private static TetrisGame tetrisGame;
     private static GameMenu gameMenu;
-
     private static Casella casella;
+    private static SettingsLogic settingsLogic;
+    
     private static JPanel gamePanel;
-    private static JTextField playerNameField;
     private static JTextField scoreField;
     private static JProgressBar timeBar;
     private static Timer gameTimer;
     private static JPanel sidePanel;
     private static JPanel topPanel;
     
-    private static List<AbstractButton> buttonsAndIcons;
-    private static boolean isGameActive = false;
-    
-    //Fichero de la serializacion
+    //Fichero de la serializacion para almacenar partidas
     private static final String GAME_DATA_FILE = "assets/partidasTetrisUIB.dat";
     private static List<Game> completedGames = new ArrayList<>();
     
-    // Declare the icon buttons and buttons at the class level
+    //Aquí se definen todos los botones de la interfaz
     private static JButton nuevaPartidaIconButton;
     private static JButton configuracionIconButton;
     private static JButton historialIconButton;
@@ -57,19 +55,55 @@ public class Tetris {
     private static JMenuItem informacionItem;
     private static JMenuItem salirItem;
     
+    //Variables para definir el tamano de la pestana y 
+    //mantener un registro de si  se pueden usar los botones del menu
     private static boolean isInfoWindowOpen = false;
+    private static final int WINDOWHEIGHT = 800; 
+    private static final int WINDOWIDTH = 1200; 
+    
+    private static List<AbstractButton> buttonsAndIcons;
+    private static boolean isGameActive = false;
 
 
-
-    public static void main(String[] args) {
+    public Tetris() {
         
-        //Inicio del programa
+        //Se aplaza la creación del manu tras haber instanciado las classes
+        //adecuandamente
         SwingUtilities.invokeLater(Tetris::createAndShowGUI);
+        
+        
+        //Creacion de las instancias de las classes
         tetrisGame = new TetrisGame();
         gameMenu = new GameMenu();
         Rectangle2D.Float initialRect = new Rectangle2D.Float(0, 0, 20, 20);
         casella = new Casella(initialRect, false);
+        
     }
+    
+    //Getters y setters
+    // Getters for the private fields
+    public List<AbstractButton> getButtonsAndIcons() {
+        return buttonsAndIcons;
+    }
+
+    public TetrisGame getTetrisGame() {
+        return tetrisGame;
+    }
+
+    public GameMenu getGameMenu() {
+        return gameMenu;
+    }
+    
+    public boolean getIsInfoWindowOpen() {
+        return isInfoWindowOpen;
+    }
+    
+    public void setIsInfoWindowOpen(boolean isInfoWindowOpen) {
+        this.isInfoWindowOpen = isInfoWindowOpen;
+    }
+    
+    
+    
     
     //Primeramente creamos los paneles 1 a 1 asi como el menu principal
     //para tener la base del programa
@@ -78,8 +112,8 @@ public class Tetris {
         //Se crea el frame
         frame = new JFrame("Tetris");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1200, 800);
-        frame.setMinimumSize(new Dimension(1200, 800));
+        frame.setSize(WINDOWIDTH, WINDOWHEIGHT);
+        frame.setMinimumSize(new Dimension(WINDOWIDTH, WINDOWHEIGHT));
         frame.setLocationRelativeTo(null);
 
         // Inicializar la lista de juegos completados desde el archivo
@@ -104,9 +138,14 @@ public class Tetris {
         //Inicializar el menú
         showMainMenu();
 
+        //Mostrar la ventana
         frame.setVisible(true);
     }
 
+    
+    //Metodo que permite crear el menu principal de lproyaecto
+    //con la initializacion de los botones y paneles asi como el fondo
+    //del menu
     private static void showMainMenu() {
         
         //Initializacion de los botones
@@ -142,6 +181,8 @@ public class Tetris {
         frame.repaint();
     }
 
+    
+    
     //Initializacion de los botones e iconos
     private static void initializeButtonsAndIcons() {
         
@@ -167,7 +208,9 @@ public class Tetris {
         salirItem = new JMenuItem("Salir");
         
         
-
+        
+        //Creación de un arraylist para que se puedan desactivar los botones
+        //iconos y items cunado se esta en partida
         buttonsAndIcons = new ArrayList<>();
 
         buttonsAndIcons.add(nuevaPartidaButton);
@@ -189,9 +232,11 @@ public class Tetris {
         buttonsAndIcons.add(salirItem);
     }
     
+    
+    
     //Metodo que permite activar y desactivar los botones que lo deberian permitir
     //esto exceptua el boton y icono de salir
-    private static void setButtonsAndIconsEnabled(boolean enabled) {
+    public static void setButtonsAndIconsEnabled(boolean enabled) {
         for (AbstractButton  button : buttonsAndIcons) {
             if (button == null) {
                 System.err.println("Found a null button in buttonsAndIcons list.");
@@ -220,21 +265,24 @@ public class Tetris {
         JPanel sidePanel = new JPanel(new GridLayout(6, 1));
         sidePanel.setBackground(Color.BLACK);
 
-        configureButton(nuevaPartidaButton);
-        configureButton(configuracionButton);
-        configureButton(historialButton);
-        configureButton(informacionButton);
-        configureButton(salirButton);
+        settingsLogic.configureButton(nuevaPartidaButton);
+        settingsLogic.configureButton(configuracionButton);
+        settingsLogic.configureButton(historialButton);
+        settingsLogic.configureButton(informacionButton);
+        settingsLogic.configureButton(salirButton);
 
+        
+        //Metodos que llaman la logica de la configuracion
+        //y que descativan el uso de otros acciones mientras
         nuevaPartidaButton.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
-            promptForPlayerName();
+            settingsLogic.promptForPlayerName();
             setButtonsAndIconsEnabled(true);
         });
         
         configuracionButton.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
-            openConfigurationWindow();
+            settingsLogic.openConfigurationWindow();
             setButtonsAndIconsEnabled(true);
         });
         
@@ -242,13 +290,13 @@ public class Tetris {
         
         informacionButton.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
-            showInfoWindow();
+            settingsLogic.showInfoWindow();
             setButtonsAndIconsEnabled(true);
         });
         
         historialButton.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
-            showGameHistoryWindow();
+            settingsLogic.showGameHistoryWindow();
             setButtonsAndIconsEnabled(true);
         });
 
@@ -278,11 +326,11 @@ public class Tetris {
         informacionIconButton.setBackground(Color.BLACK);
         salirIconButton.setBackground(Color.BLACK);
 
-        configureIconButton(nuevaPartidaIconButton);
-        configureIconButton(configuracionIconButton);
-        configureIconButton(historialIconButton);
-        configureIconButton(informacionIconButton);
-        configureIconButton(salirIconButton);
+        settingsLogic.configureIconButton(nuevaPartidaIconButton);
+        settingsLogic.configureIconButton(configuracionIconButton);
+        settingsLogic.configureIconButton(historialIconButton);
+        settingsLogic.configureIconButton(informacionIconButton);
+        settingsLogic.configureIconButton(salirIconButton);
 
         topPanel.add(nuevaPartidaIconButton);
         topPanel.add(configuracionIconButton);
@@ -290,15 +338,18 @@ public class Tetris {
         topPanel.add(informacionIconButton);
         topPanel.add(salirIconButton);
 
+        
+        //Metodos que llaman la logica de la configuracion
+        //y que descativan el uso de otros acciones mientras
         nuevaPartidaIconButton.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
-            promptForPlayerName();
+            settingsLogic.promptForPlayerName();
             setButtonsAndIconsEnabled(true);
         });
 
         configuracionIconButton.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
-            openConfigurationWindow();
+            settingsLogic.openConfigurationWindow();
             setButtonsAndIconsEnabled(true);
         });
 
@@ -306,13 +357,13 @@ public class Tetris {
 
         informacionIconButton.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
-            showInfoWindow();
+            settingsLogic.showInfoWindow();
             setButtonsAndIconsEnabled(true);
         });
 
         historialIconButton.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
-            showGameHistoryWindow();
+            settingsLogic.showGameHistoryWindow();
             setButtonsAndIconsEnabled(true);
         });
         
@@ -325,15 +376,18 @@ public class Tetris {
         dropdownMenu.add(informacionItem);
         dropdownMenu.add(salirItem);
 
+        
+        //Metodos que llaman la logica de la configuracion
+        //y que descativan el uso de otros acciones mientras
         nuevaPartidaItem.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
-            promptForPlayerName();
+            settingsLogic.promptForPlayerName();
             setButtonsAndIconsEnabled(true);
         });
 
         configuracionItem.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
-            openConfigurationWindow();
+            settingsLogic.openConfigurationWindow();
             setButtonsAndIconsEnabled(true);
         });
 
@@ -341,13 +395,13 @@ public class Tetris {
 
         informacionItem.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
-            showInfoWindow();
+            settingsLogic.showInfoWindow();
             setButtonsAndIconsEnabled(true);
         });
 
         historialItem.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
-            showGameHistoryWindow();
+            settingsLogic.showGameHistoryWindow();
             setButtonsAndIconsEnabled(true);
         });
 
@@ -365,52 +419,10 @@ public class Tetris {
     
     
     
-    
-    //Una vez hemos creado todos los paneles del programa, no encargamos de la
-    //logica que requiere de los elementos del menu para funcionar correctamente
-    //Estos incluyen iniciar una partida o bien el temporizador de las partidas
 
     
+    //PENDING PENDING
     
-    //Estandarizacion de los botones
-    private static void configureButton(JButton button) {
-        button.setBackground(Color.BLACK);
-        button.setForeground(Color.WHITE);
-        button.setBorder(BorderFactory.createLineBorder(Color.WHITE));
-        button.setPreferredSize(new Dimension(100, 100));
-    }
-    
-    //Estandarizacion de los iconos
-    private static void configureIconButton(JButton button) {
-        button.setPreferredSize(new Dimension(50, 50));
-        button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createEmptyBorder());
-    }
-    
-    //A partir de aqui hay metodos que requieren del acceso a las interfaces
-    //para poder funcionar, pero que estan relacionado en cierta parte con la lógica
-    //del juego
-    
-    //Metodo que pide al usuario su nombre para entrar en patida
-    private static void promptForPlayerName() {
-        String playerName = JOptionPane.showInputDialog(frame, "Enter your name:", "Player Name", JOptionPane.PLAIN_MESSAGE);
-
-        if (playerName != null && !playerName.trim().isEmpty()) {
-            if (playerName.length() > tetrisGame.getPlayerNameMaxLength()) {
-                playerName = playerName.substring(0, tetrisGame.getPlayerNameMaxLength());  // Truncate the name if it exceeds the max length
-            }
-            tetrisGame.setPlayerName(playerName);
-            gameMenu.startGame();
-            setButtonsAndIconsEnabled(true);
-        } else {
-            if (playerName == null) {  //La caja de dialogo es cerrada
-                //NO se hace nada
-            } else {  //La caja de dialogo esta vacia pero se intenta iniciar partida
-                JOptionPane.showMessageDialog(frame, "Debes intrudicr un nombre!", "Error", JOptionPane.ERROR_MESSAGE);
-                promptForPlayerName();  //Se le vuelve a pedir un nombre
-            }
-        }
-    }
     
     //Metodo que incrementa la puntuacion al retirar una fila o columna
     public static void increaseScore() {
@@ -448,165 +460,5 @@ public class Tetris {
         //Se muestra el resultado al usuario
         JOptionPane.showMessageDialog(frame, "Time's up! Your score: " + tetrisGame.getPlayerScore(), "Game Over", JOptionPane.INFORMATION_MESSAGE);
         showMainMenu();
-    }
-    
-    //Metodo que se encarga de la pestana de informacion
-    private static void showInfoWindow() {
-        if (isInfoWindowOpen) {
-            return;
-        }
-
-        isInfoWindowOpen = true;
-        JDialog infoDialog = new JDialog(frame, "Información del Juego", true);
-        infoDialog.setSize(500, 400);
-        infoDialog.setLocationRelativeTo(frame);
-
-        JTextArea textArea = new JTextArea();
-        textArea.setEditable(false);
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true);
-
-        try (BufferedReader br = new BufferedReader(new FileReader("assets/info.txt"))) {
-            textArea.read(br, null);
-        } catch (IOException e) {
-            textArea.setText("No se pudo cargar la información del juego.");
-        }
-
-        JScrollPane scrollPane = new JScrollPane(textArea);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-
-        infoDialog.add(scrollPane);
-
-        infoDialog.addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                isInfoWindowOpen = false;
-            }
-        });
-
-        infoDialog.setVisible(true);
-    }
-    
-    //Metodo que muestra el historial de las partidas
-    private static void showGameHistoryWindow() {
-        JFrame historyFrame = new JFrame("Game History");
-        historyFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        historyFrame.setSize(600, 500);
-        historyFrame.setLocationRelativeTo(frame);
-
-        JTextArea historyTextArea = new JTextArea(10, 30);
-        historyTextArea.setEditable(false);
-        historyTextArea.setLineWrap(true);
-        historyTextArea.setWrapStyleWord(true);
-
-        StringBuilder historyText = new StringBuilder("Game History:\n");
-        for (Game game : completedGames) {
-            historyText.append(game.toString()).append("\n");
-        }
-        historyTextArea.setText(historyText.toString());
-
-        JScrollPane scrollPane = new JScrollPane(historyTextArea);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        
-        historyFrame.getContentPane().add(scrollPane, BorderLayout.CENTER);
-
-        historyFrame.setVisible(true);
-    }
-   
-    //Metodo que se encarga de la logica del menu de configuracion
-    private static void openConfigurationWindow() {
-        String[] options = {"Configuración específica juego", "Modificar tiempo partida", "Nada"};
-        int choice = JOptionPane.showOptionDialog(
-                frame,
-                "¿QUÉ DESEAS REALIZAR?",
-                "CONFIGURACIÓN",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                options,
-                options[0]
-        );
-
-        switch (choice) {
-            case 0:
-                showSpecificGameConfiguration();
-                break;
-            case 1:
-                showModifyGameTimeConfiguration();
-                break;
-            case 2:
-            default:
-                //Hacer nada
-                break;
-        }
-    }
-    
-    //Metodo que muestra la configuracion en el que se modfica los
-    //valores a traves de los FieldText
-    private static void showSpecificGameConfiguration() {
-        JPanel panel = new JPanel(new GridLayout(0, 2));
-        panel.add(new JLabel("Puntuación Casillas Formas Eliminadas:"));
-        JTextField puntCasillasEliminadasField = new JTextField("" + tetrisGame.getRemoveCellCost());
-        panel.add(puntCasillasEliminadasField);
-
-        panel.add(new JLabel("Puntuación Rotar Forma:"));
-        JTextField puntRotarFormaField = new JTextField("" + tetrisGame.getRotateFormScoreCost());
-        panel.add(puntRotarFormaField);
-
-        panel.add(new JLabel("Puntuación Nueva Forma:"));
-        JTextField puntNuevaFormaField = new JTextField("" + tetrisGame.getChangeFormCost());
-        panel.add(puntNuevaFormaField);
-
-        panel.add(new JLabel("Imagen Casillas Formas:"));
-        JTextField imgCasillasFormasField = new JTextField("" + casella.getOcuppiedCellTexture());
-        panel.add(imgCasillasFormasField);
-
-        int result = JOptionPane.showConfirmDialog(frame, panel, "CONFIGURACIÓN ESPECÍFICA JUEGO", JOptionPane.OK_CANCEL_OPTION);
-        if (result == JOptionPane.OK_OPTION) {
-            try {
-                int puntCasillasEliminadas = Integer.parseInt(puntCasillasEliminadasField.getText());
-                int puntRotarForma = Integer.parseInt(puntRotarFormaField.getText());
-                int puntNuevaForma = Integer.parseInt(puntNuevaFormaField.getText());
-                String imgCasillasFormas = "/" + imgCasillasFormasField.getText() + ".jpg";
-
-                //Se aplican los cambios realizados
-                tetrisGame.setRemoveCellCost(puntCasillasEliminadas);
-                tetrisGame.setRotateFormScoreCost(puntRotarForma);
-                tetrisGame.setChangeFormCost(puntNuevaForma);
-                casella.setOcuppiedCellTexture(imgCasillasFormas);
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(frame, "Por favor ingrese valores válidos para las puntuaciones.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }
-
-    //Metodo para la configuracion del tiempo
-    private static void showModifyGameTimeConfiguration() {
-        JPanel panel = new JPanel(new GridLayout(0, 2));
-        panel.add(new JLabel("Tiempo de Partida:"));
-        JTextField tiempoPartidaField = new JTextField("" + tetrisGame.getTotalGameTime());
-        panel.add(tiempoPartidaField);
-
-        boolean validInput = false;
-
-        while (!validInput) {
-            int result = JOptionPane.showConfirmDialog(frame, panel, "MODIFICAR TIEMPO PARTIDA", JOptionPane.OK_CANCEL_OPTION);
-            if (result == JOptionPane.OK_OPTION) {
-                try {
-                    int tiempoPartida = Integer.parseInt(tiempoPartidaField.getText());
-                    if (tiempoPartida > 0) {
-                        tetrisGame.setTotalGameTime(tiempoPartida);
-                        validInput = true;
-                    } else {
-                        JOptionPane.showMessageDialog(frame, "El tiempo de partida debe ser mayor que 0.", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-                } catch (NumberFormatException e) {
-                    JOptionPane.showMessageDialog(frame, "Por favor ingrese un valor válido para el tiempo de partida.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            } else {
-                break; //Se cancela el cambio
-            }
-        }
     }
 }

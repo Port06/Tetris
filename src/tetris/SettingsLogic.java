@@ -33,7 +33,9 @@ public class SettingsLogic {
     private List<AbstractButton> buttonsAndIcons;
     private TetrisGame tetrisGame;
     private GameMenu gameMenu;
+    private Casella casella;
     private Tetris tetris;
+    
 
     
     // Constructor
@@ -42,6 +44,11 @@ public class SettingsLogic {
         this.buttonsAndIcons = buttonsAndIcons;
         this.tetrisGame = tetrisGame;
         this.gameMenu = gameMenu;
+    }
+    
+    //Metodo que initializa la variable tetris
+    public void setTetris(Tetris tetris) {
+        this.tetris = tetris;
     }
     
     
@@ -131,7 +138,7 @@ public class SettingsLogic {
         historyTextArea.setWrapStyleWord(true);
 
         StringBuilder historyText = new StringBuilder("Game History:\n");
-        for (Game game : tetrisGame.getCompletedGames()) {
+        for (Game game : tetris.getCompletedGames()) {
             historyText.append(game.toString()).append("\n");
         }
         historyTextArea.setText(historyText.toString());
@@ -189,7 +196,7 @@ public class SettingsLogic {
         panel.add(puntNuevaFormaField);
 
         panel.add(new JLabel("Imagen Casillas Formas:"));
-        JTextField imgCasillasFormasField = new JTextField("" + tetrisGame.getOcuppiedCellTexture());
+        JTextField imgCasillasFormasField = new JTextField("" + casella.getOcuppiedCellTexture());
         panel.add(imgCasillasFormasField);
 
         int result = JOptionPane.showConfirmDialog(frame, panel, "CONFIGURACIÓN ESPECÍFICA JUEGO", JOptionPane.OK_CANCEL_OPTION);
@@ -204,7 +211,7 @@ public class SettingsLogic {
                 tetrisGame.setRemoveCellCost(puntCasillasEliminadas);
                 tetrisGame.setRotateFormScoreCost(puntRotarForma);
                 tetrisGame.setChangeFormCost(puntNuevaForma);
-                tetrisGame.setOcuppiedCellTexture(imgCasillasFormas);
+                casella.setOcuppiedCellTexture(imgCasillasFormas);
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(frame, "Por favor ingrese valores válidos para las puntuaciones.", "Error", JOptionPane.ERROR_MESSAGE);
             }
