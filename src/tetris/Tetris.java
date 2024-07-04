@@ -62,16 +62,13 @@ public class Tetris {
     private static boolean isGameActive = false;
 
 
-    public Tetris(GameIO gameIO) {
+    public Tetris(GameIO gameIO, GameMenu gameMenu, TetrisGame tetrisGame) {
         // Create instances of other classes
-        tetrisGame = new TetrisGame();
-        gameMenu = new GameMenu();
         this.gameIO = gameIO;
+        this.gameMenu = gameMenu;
+        this.tetrisGame = tetrisGame;
         Rectangle2D.Float initialRect = new Rectangle2D.Float(0, 0, 20, 20);
         casella = new Casella(initialRect, false);
-
-        // Initialize the settings logic
-        settingsLogic = new SettingsLogic(frame, buttonsAndIcons, tetrisGame, gameMenu);
 
         // Schedule a job for the event-dispatching thread to create and show the GUI
         SwingUtilities.invokeLater(Tetris::createAndShowGUI);
@@ -79,6 +76,9 @@ public class Tetris {
     
     //Getters y setters
     // Getters for the private fields
+    public void setSettingsLogic(SettingsLogic settingsLogic) {
+        this.settingsLogic = settingsLogic;
+    }
     public List<AbstractButton> getButtonsAndIcons() {
         return buttonsAndIcons;
     }

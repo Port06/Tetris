@@ -40,11 +40,12 @@ public class SettingsLogic {
 
     
     // Constructor
-    public SettingsLogic(JFrame frame, List<AbstractButton> buttonsAndIcons, TetrisGame tetrisGame, GameMenu gameMenu) {
+    public SettingsLogic(JFrame frame, List<AbstractButton> buttonsAndIcons, TetrisGame tetrisGame, GameMenu gameMenu, GameIO gameIO) {
         this.frame = frame;
         this.buttonsAndIcons = buttonsAndIcons;
         this.tetrisGame = tetrisGame;
         this.gameMenu = gameMenu;
+        this.gameIO = gameIO;
     }
     
     //Metodo que initializa la variable tetris

@@ -12,14 +12,15 @@ public class Main {
         
         //Aqui se crean todas las intancias necessarias para el programa
         GameIO gameIO = new GameIO();
-        GameMenu gameMenu = new GameMenu();
+        GameMenu gameMenu = new GameMenu(gameIO);
+        TetrisGame tetrisGame = new TetrisGame();
         
-        tetris = new Tetris(gameIO); 
+        tetris = new Tetris(gameIO, gameMenu, tetrisGame); 
         
-        SettingsLogic settingsLogic = new SettingsLogic(tetris.frame, tetris.getButtonsAndIcons(), tetris.getTetrisGame(), tetris.getGameMenu());
+        SettingsLogic settingsLogic = new SettingsLogic(tetris.frame, tetris.getButtonsAndIcons(), tetrisGame, gameMenu, gameIO);
        
-        
+        tetris.setSettingsLogic(settingsLogic);
         settingsLogic.setTetris(tetris);
-        gameMenu.setTetris(tetris, gameIO);
+        gameMenu.setTetris(tetris);
     }
 }
