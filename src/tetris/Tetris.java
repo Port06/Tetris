@@ -121,7 +121,7 @@ public class Tetris {
     
     
     //A partir de aquí se genera los paneles con los botones, 
-    //iconos e items necesarios para la interfaz
+    //iconos e items necesarios
     
     
     //Primeramente creamos los paneles 1 a 1 asi como el menu principal
@@ -255,32 +255,28 @@ public class Tetris {
         nuevaPartidaButton.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
             settingsLogic.promptForPlayerName();
-            //NO hay necesidad de reactivarlos aqui, se realiza en la logica
-            //de la pestana de configuracion
+            setButtonsAndIconsEnabled(true);
         });
         
         configuracionButton.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
             settingsLogic.openConfigurationWindow();
-            //NO hay necesidad de reactivarlos aqui, se realiza en la logica
-            //de la pestana de configuracion
+            setButtonsAndIconsEnabled(true);
+        });
+        
+        salirButton.addActionListener(e -> System.exit(0));
+        
+        informacionButton.addActionListener(e -> {
+            setButtonsAndIconsEnabled(false);
+            settingsLogic.showInfoWindow();
+            setButtonsAndIconsEnabled(true);
         });
         
         historialButton.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
             settingsLogic.showGameHistoryWindow();
-            //NO hay necesidad de reactivarlos aqui, se realiza en la logica
-            //de la pestana de configuracion
+            setButtonsAndIconsEnabled(true);
         });
-        
-        informacionButton.addActionListener(e -> {
-            setButtonsAndIconsEnabled(false);
-            settingsLogic.showInfoWindow();
-            //NO hay necesidad de reactivarlos aqui, se realiza en la logica
-            //de la pestana de configuracion
-        });
-        
-        salirButton.addActionListener(e -> System.exit(0));
 
         sidePanel.add(nuevaPartidaButton);
         sidePanel.add(configuracionButton);
@@ -326,32 +322,28 @@ public class Tetris {
         nuevaPartidaIconButton.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
             settingsLogic.promptForPlayerName();
-            //NO hay necesidad de reactivarlos aqui, se realiza en la logica
-            //de la pestana de configuracion
+            setButtonsAndIconsEnabled(true);
         });
 
         configuracionIconButton.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
             settingsLogic.openConfigurationWindow();
-            //NO hay necesidad de reactivarlos aqui, se realiza en la logica
-            //de la pestana de configuracion
+            setButtonsAndIconsEnabled(true);
         });
-        
-        historialIconButton.addActionListener(e -> {
-            setButtonsAndIconsEnabled(false);
-            settingsLogic.showGameHistoryWindow();
-            //NO hay necesidad de reactivarlos aqui, se realiza en la logica
-            //de la pestana de configuracion
-        });
+
+        salirIconButton.addActionListener(e -> System.exit(0));
 
         informacionIconButton.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
             settingsLogic.showInfoWindow();
-            //NO hay necesidad de reactivarlos aqui, se realiza en la logica
-            //de la pestana de configuracion
+            setButtonsAndIconsEnabled(true);
         });
-        
-        salirIconButton.addActionListener(e -> System.exit(0));
+
+        historialIconButton.addActionListener(e -> {
+            setButtonsAndIconsEnabled(false);
+            settingsLogic.showGameHistoryWindow();
+            setButtonsAndIconsEnabled(true);
+        });
         
         //Initializacion menu desplegable
         JPopupMenu dropdownMenu = new JPopupMenu();
@@ -368,32 +360,28 @@ public class Tetris {
         nuevaPartidaItem.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
             settingsLogic.promptForPlayerName();
-            //NO hay necesidad de reactivarlos aqui, se realiza en la logica
-            //de la pestana de configuracion
+            setButtonsAndIconsEnabled(true);
         });
 
         configuracionItem.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
             settingsLogic.openConfigurationWindow();
-            //NO hay necesidad de reactivarlos aqui, se realiza en la logica
-            //de la pestana de configuracion
+            setButtonsAndIconsEnabled(true);
         });
-        
-        historialItem.addActionListener(e -> {
-            setButtonsAndIconsEnabled(false);
-            settingsLogic.showGameHistoryWindow();
-            //NO hay necesidad de reactivarlos aqui, se realiza en la logica
-            //de la pestana de configuracion
-        });
+
+        salirItem.addActionListener(e -> System.exit(0));
 
         informacionItem.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
             settingsLogic.showInfoWindow();
-            //NO hay necesidad de reactivarlos aqui, se realiza en la logica
-            //de la pestana de configuracion
+            setButtonsAndIconsEnabled(true);
         });
-        
-        salirItem.addActionListener(e -> System.exit(0));
+
+        historialItem.addActionListener(e -> {
+            setButtonsAndIconsEnabled(false);
+            settingsLogic.showGameHistoryWindow();
+            setButtonsAndIconsEnabled(true);
+        });
 
         // Mostrar el menú desplegable al hacer clic en el label
         menuLabel.addMouseListener(new MouseAdapter() {
@@ -405,8 +393,6 @@ public class Tetris {
 
         return topPanel;
     }
-    
-    
     
     //Metodo que permite activar y desactivar los botones que lo deberian permitir
     //esto exceptua el boton y icono de salir

@@ -71,59 +71,23 @@ public class SettingsLogic {
 
     // Metodo que pide al usuario su nombre para entrar en partida
     public void promptForPlayerName() {
-        JFrame promptFrame = new JFrame("Player Name");
-        promptFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        promptFrame.setSize(300, 120);
-        promptFrame.setLocationRelativeTo(frame);
+        String playerName = JOptionPane.showInputDialog(frame, "Enter your name:", "Player Name", JOptionPane.PLAIN_MESSAGE);
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-
-        JLabel label = new JLabel("Enter your name:");
-        JTextField textField = new JTextField(20);
-
-        JButton okButton = new JButton("OK");
-        JButton cancelButton = new JButton("Cancel");
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(okButton);
-        buttonPanel.add(cancelButton);
-
-        panel.add(label, BorderLayout.NORTH);
-        panel.add(textField, BorderLayout.CENTER);
-        panel.add(buttonPanel, BorderLayout.SOUTH);
-
-        promptFrame.add(panel);
-
-        okButton.addActionListener(e -> {
-            String playerName = textField.getText().trim();
-            if (!playerName.isEmpty()) {
-                if (playerName.length() > tetrisGame.getPlayerNameMaxLength()) {
-                    playerName = playerName.substring(0, tetrisGame.getPlayerNameMaxLength());  // Truncate the name if it exceeds the max length
-                }
-                tetrisGame.setPlayerName(playerName);
-                gameMenu.startGame();
-                tetris.setButtonsAndIconsEnabled(true);
-                promptFrame.dispose();
-            } else {
-                JOptionPane.showMessageDialog(promptFrame, "Debes introducir un nombre!", "Error", JOptionPane.ERROR_MESSAGE);
+        if (playerName != null && !playerName.trim().isEmpty()) {
+            if (playerName.length() > tetrisGame.getPlayerNameMaxLength()) {
+                playerName = playerName.substring(0, tetrisGame.getPlayerNameMaxLength());  // Truncate the name if it exceeds the max length
             }
-        });
-
-        cancelButton.addActionListener(e -> {
-            promptFrame.dispose();
+            tetrisGame.setPlayerName(playerName);
+            gameMenu.startGame();
             tetris.setButtonsAndIconsEnabled(true);
-        });
-
-        promptFrame.addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                tetris.setButtonsAndIconsEnabled(true);
+        } else {
+            if (playerName == null) {  // La caja de dialogo es cerrada
+                // NO se hace nada
+            } else {  // La caja de dialogo esta vacia pero se intenta iniciar partida
+                JOptionPane.showMessageDialog(frame, "Debes intrudicr un nombre!", "Error", JOptionPane.ERROR_MESSAGE);
+                promptForPlayerName();  // Se le vuelve a pedir un nombre
             }
-        });
-
-        tetris.setButtonsAndIconsEnabled(false);
-        promptFrame.setVisible(true);
+        }
     }
 
     // Metodo que se encarga de la pestaña de informacion
@@ -133,9 +97,9 @@ public class SettingsLogic {
         }
 
         tetris.setIsInfoWindowOpen(true);
-        JFrame infoFrame = new JFrame("Información del Juego");
-        infoFrame.setSize(500, 400);
-        infoFrame.setLocationRelativeTo(frame);
+        JDialog infoDialog = new JDialog(frame, "Información del Juego", true);
+        infoDialog.setSize(500, 400);
+        infoDialog.setLocationRelativeTo(frame);
 
         JTextArea textArea = new JTextArea();
         textArea.setEditable(false);
@@ -151,23 +115,20 @@ public class SettingsLogic {
         JScrollPane scrollPane = new JScrollPane(textArea);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
-        infoFrame.add(scrollPane);
+        infoDialog.add(scrollPane);
 
-        infoFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+        infoDialog.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
                 tetris.setIsInfoWindowOpen(false);
-                tetris.setButtonsAndIconsEnabled(true);
             }
         });
 
-        tetris.setButtonsAndIconsEnabled(false);
-        infoFrame.setVisible(true);
+        infoDialog.setVisible(true);
     }
 
     // Metodo que muestra el historial de las partidas
     public void showGameHistoryWindow() {
-
         JFrame historyFrame = new JFrame("Game History");
         historyFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         historyFrame.setSize(600, 500);
@@ -190,92 +151,58 @@ public class SettingsLogic {
 
         historyFrame.getContentPane().add(scrollPane, BorderLayout.CENTER);
 
-        historyFrame.addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                tetris.setButtonsAndIconsEnabled(true);
-            }
-        });
-
         historyFrame.setVisible(true);
     }
 
     // Metodo que se encarga de la logica del menu de configuracion
     public void openConfigurationWindow() {
-        JFrame configFrame = new JFrame("CONFIGURACIÓN");
-        configFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        configFrame.setSize(300, 150);
-        configFrame.setLocationRelativeTo(frame);
-        JPanel panel = new JPanel(new GridLayout(0, 1));
+        String[] options = {"Configuración específica juego", "Modificar tiempo partida", "Nada"};
+        int choice = JOptionPane.showOptionDialog(
+                frame,
+                "¿QUÉ DESEAS REALIZAR?",
+                "CONFIGURACIÓN",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]
+        );
 
-        JButton specificGameConfigButton = new JButton("Configuración específica juego");
-        JButton modifyGameTimeButton = new JButton("Modificar tiempo partida");
-        JButton nothingButton = new JButton("Nada");
-
-        panel.add(specificGameConfigButton);
-        panel.add(modifyGameTimeButton);
-        panel.add(nothingButton);
-
-        specificGameConfigButton.addActionListener(e -> {
-            showSpecificGameConfiguration();
-            configFrame.dispose();
-        });
-
-        modifyGameTimeButton.addActionListener(e -> {
-            showModifyGameTimeConfiguration();
-            configFrame.dispose();
-        });
-        
-        configFrame.addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                tetris.setButtonsAndIconsEnabled(true);
-            }
-        });
-
-        tetris.setButtonsAndIconsEnabled(false);
-
-        nothingButton.addActionListener(e -> {
-            tetris.setButtonsAndIconsEnabled(true);
-            configFrame.dispose();
-        });
-
-        configFrame.add(panel);
-        configFrame.setVisible(true);
+        switch (choice) {
+            case 0:
+                showSpecificGameConfiguration();
+                break;
+            case 1:
+                showModifyGameTimeConfiguration();
+                break;
+            case 2:
+            default:
+                // Hacer nada
+                break;
+        }
     }
 
     // Metodo que muestra la configuracion en el que se modifica los valores a través de los FieldText
     public void showSpecificGameConfiguration() {
-        JFrame configFrame = new JFrame("CONFIGURACIÓN ESPECÍFICA JUEGO");
-        configFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        configFrame.setSize(400, 400);
-        configFrame.setLocationRelativeTo(frame);
-
-        JPanel panel = new JPanel(new GridLayout(0, 1));
-        panel.add(new JLabel("     Puntuación Casillas Formas Eliminadas:"));
+        JPanel panel = new JPanel(new GridLayout(0, 2));
+        panel.add(new JLabel("Puntuación Casillas Formas Eliminadas:"));
         JTextField puntCasillasEliminadasField = new JTextField("" + tetrisGame.getRemoveCellCost());
         panel.add(puntCasillasEliminadasField);
 
-        panel.add(new JLabel("     Puntuación Rotar Forma:"));
+        panel.add(new JLabel("Puntuación Rotar Forma:"));
         JTextField puntRotarFormaField = new JTextField("" + tetrisGame.getRotateFormScoreCost());
         panel.add(puntRotarFormaField);
 
-        panel.add(new JLabel("     Puntuación Nueva Forma:"));
+        panel.add(new JLabel("Puntuación Nueva Forma:"));
         JTextField puntNuevaFormaField = new JTextField("" + tetrisGame.getChangeFormCost());
         panel.add(puntNuevaFormaField);
 
-        panel.add(new JLabel("     Imagen Casillas Formas:"));
+        panel.add(new JLabel("Imagen Casillas Formas:"));
         JTextField imgCasillasFormasField = new JTextField("" + casella.getOcuppiedCellTexture());
         panel.add(imgCasillasFormasField);
 
-        JButton okButton = new JButton("OK");
-        JButton cancelButton = new JButton("Cancel");
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(okButton);
-        buttonPanel.add(cancelButton);
-        panel.add(buttonPanel);
-
-        okButton.addActionListener(e -> {
+        int result = JOptionPane.showConfirmDialog(frame, panel, "CONFIGURACIÓN ESPECÍFICA JUEGO", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
             try {
                 int puntCasillasEliminadas = Integer.parseInt(puntCasillasEliminadasField.getText());
                 int puntRotarForma = Integer.parseInt(puntRotarFormaField.getText());
@@ -287,78 +214,39 @@ public class SettingsLogic {
                 tetrisGame.setRotateFormScoreCost(puntRotarForma);
                 tetrisGame.setChangeFormCost(puntNuevaForma);
                 casella.setOcuppiedCellTexture(imgCasillasFormas);
-                configFrame.dispose();
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(configFrame, "Por favor ingrese valores válidos para las puntuaciones.", "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(frame, "Por favor ingrese valores válidos para las puntuaciones.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        });
-        
-        configFrame.addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                tetris.setButtonsAndIconsEnabled(true);
-            }
-        });
-
-        tetris.setButtonsAndIconsEnabled(false);
-
-        cancelButton.addActionListener(e -> {
-            tetris.setButtonsAndIconsEnabled(true);
-            configFrame.dispose();
-        });
-
-        configFrame.add(panel);
-        configFrame.setVisible(true);
+        }
     }
 
     // Metodo para la configuración del tiempo
     public void showModifyGameTimeConfiguration() {
-        JFrame configFrame = new JFrame("MODIFICAR TIEMPO PARTIDA");
-        configFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        configFrame.setSize(300, 150);
-        configFrame.setLocationRelativeTo(frame);
-
-        JPanel panel = new JPanel(new GridLayout(0, 1));
+        JPanel panel = new JPanel(new GridLayout(0, 2));
         panel.add(new JLabel("Tiempo de Partida:"));
         JTextField tiempoPartidaField = new JTextField("" + tetrisGame.getTotalGameTime());
         panel.add(tiempoPartidaField);
 
-        JButton okButton = new JButton("OK");
-        JButton cancelButton = new JButton("Cancel");
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(okButton);
-        buttonPanel.add(cancelButton);
-        panel.add(buttonPanel);
+        boolean validInput = false;
 
-        okButton.addActionListener(e -> {
-            try {
-                int tiempoPartida = Integer.parseInt(tiempoPartidaField.getText());
-                if (tiempoPartida > 0) {
-                    tetrisGame.setTotalGameTime(tiempoPartida);
-                    configFrame.dispose();
-                } else {
-                    JOptionPane.showMessageDialog(configFrame, "El tiempo de partida debe ser mayor que 0.", "Error", JOptionPane.ERROR_MESSAGE);
+        while (!validInput) {
+            int result = JOptionPane.showConfirmDialog(frame, panel, "MODIFICAR TIEMPO PARTIDA", JOptionPane.OK_CANCEL_OPTION);
+            if (result == JOptionPane.OK_OPTION) {
+                try {
+                    int tiempoPartida = Integer.parseInt(tiempoPartidaField.getText());
+                    if (tiempoPartida > 0) {
+                        tetrisGame.setTotalGameTime(tiempoPartida);
+                        validInput = true;
+                    } else {
+                        JOptionPane.showMessageDialog(frame, "El tiempo de partida debe ser mayor que 0.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(frame, "Por favor ingrese un valor válido para el tiempo de partida.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(configFrame, "Por favor ingrese un valor válido para el tiempo de partida.", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                break; // Se cancela el cambio
             }
-        });
-        
-        configFrame.addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                tetris.setButtonsAndIconsEnabled(true);
-            }
-        });
-
-        tetris.setButtonsAndIconsEnabled(false);
-
-        cancelButton.addActionListener(e -> {
-            tetris.setButtonsAndIconsEnabled(true);
-            configFrame.dispose();
-        });
-
-        configFrame.add(panel);
-        configFrame.setVisible(true);
-    }  
+        }
+    }
+    
 }
