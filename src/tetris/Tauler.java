@@ -59,6 +59,11 @@ public class Tauler extends JPanel implements KeyListener {
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (tetrisGame.getDraggedPiece() != null) {
+                    // Verificación de si el ratón está dentro del tablero
+                    if (!isMouseWithinBoard(e.getX(), e.getY())) {
+                        return;
+                    }
+                    
                     int row = e.getY() / COSTAT;
                     int col = e.getX() / COSTAT;
 
@@ -153,6 +158,11 @@ public class Tauler extends JPanel implements KeyListener {
     //Actualizacionde la posicion del raton en la pantalla
     public void updateMousePosition(MouseEvent e) {
         mousePosition = e.getPoint();
+    }
+    
+    // Método que comprueba si el ratón está dentro del tablero
+    private boolean isMouseWithinBoard(int mouseX, int mouseY) {
+        return mouseX >= 0 && mouseX < MAXIM && mouseY >= 0 && mouseY < MAXIM;
     }
     
     //Metodo que comprueba si es una posicion valida
