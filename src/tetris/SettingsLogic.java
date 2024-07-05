@@ -12,7 +12,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JDialog;
+import java.awt.Font;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -22,6 +22,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.*;
 import java.util.List;
+import java.io.InputStream;
+import static tetris.Tetris.setButtonsAndIconsEnabled;
 
 //opciones del menu. Esto incluye la interfaz y lógica
 //en question necesaria
@@ -89,22 +91,27 @@ public class SettingsLogic {
             }
         }
     }
-
-    // Metodo que se encarga de la pestaña de informacion
+    
+    // Método que se encarga de la pestaña de información
     public void showInfoWindow() {
         if (tetris.getIsInfoWindowOpen()) {
             return;
         }
 
         tetris.setIsInfoWindowOpen(true);
-        JDialog infoDialog = new JDialog(frame, "Información del Juego", true);
-        infoDialog.setSize(500, 400);
-        infoDialog.setLocationRelativeTo(frame);
+
+        JFrame infoFrame = new JFrame("Información del Juego");
+        infoFrame.setSize(500, 400);
+        infoFrame.setLocationRelativeTo(frame);
 
         JTextArea textArea = new JTextArea();
         textArea.setEditable(false);
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
+        
+        // Establecer el tamaño de fuente del JTextArea
+        Font textAreaFont = new Font("Arial", Font.PLAIN, 16); // Cambia 16 al tamaño de fuente deseado
+        textArea.setFont(textAreaFont);
 
         try (BufferedReader br = new BufferedReader(new FileReader("assets/info.txt"))) {
             textArea.read(br, null);
@@ -115,16 +122,17 @@ public class SettingsLogic {
         JScrollPane scrollPane = new JScrollPane(textArea);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
-        infoDialog.add(scrollPane);
+        infoFrame.add(scrollPane);
 
-        infoDialog.addWindowListener(new java.awt.event.WindowAdapter() {
+        infoFrame.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
                 tetris.setIsInfoWindowOpen(false);
+                setButtonsAndIconsEnabled(true);
             }
         });
 
-        infoDialog.setVisible(true);
+        infoFrame.setVisible(true);
     }
 
     // Metodo que muestra el historial de las partidas
@@ -138,6 +146,10 @@ public class SettingsLogic {
         historyTextArea.setEditable(false);
         historyTextArea.setLineWrap(true);
         historyTextArea.setWrapStyleWord(true);
+        
+        // Establecer el tamaño de fuente del JTextArea
+        Font historyTextAreaFont = new Font("Arial", Font.PLAIN, 16); // Cambia 16 al tamaño de fuente deseado
+        historyTextArea.setFont(historyTextAreaFont);
 
         StringBuilder historyText = new StringBuilder("Game History:\n");
         for (Game game : gameIO.getCompletedGames()) {
@@ -152,39 +164,69 @@ public class SettingsLogic {
         historyFrame.getContentPane().add(scrollPane, BorderLayout.CENTER);
 
         historyFrame.setVisible(true);
+        
+        historyFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                setButtonsAndIconsEnabled(true);
+            }
+        });
     }
 
-    // Metodo que se encarga de la logica del menu de configuracion
+    // Método que se encarga de la lógica del menú de configuración
     public void openConfigurationWindow() {
-        String[] options = {"Configuración específica juego", "Modificar tiempo partida", "Nada"};
-        int choice = JOptionPane.showOptionDialog(
-                frame,
-                "¿QUÉ DESEAS REALIZAR?",
-                "CONFIGURACIÓN",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                options,
-                options[0]
-        );
+        JFrame configFrame = new JFrame("Configuración");
+        configFrame.setSize(300, 200);
+        configFrame.setLocationRelativeTo(frame);
+        configFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        switch (choice) {
-            case 0:
-                showSpecificGameConfiguration();
-                break;
-            case 1:
-                showModifyGameTimeConfiguration();
-                break;
-            case 2:
-            default:
-                // Hacer nada
-                break;
-        }
+        JPanel panel = new JPanel(new GridLayout(4, 1, 10, 10));
+
+        JLabel titleLabel = new JLabel("¿QUÉ DESEAS REALIZAR?", JLabel.CENTER);
+        panel.add(titleLabel);
+
+        JButton specificGameConfigButton = new JButton("Configuración específica juego");
+        specificGameConfigButton.addActionListener(e -> {
+        configFrame.dispose();
+        showSpecificGameConfiguration();
+        });
+        panel.add(specificGameConfigButton);
+
+        JButton modifyGameTimeButton = new JButton("Modificar tiempo partida");
+        modifyGameTimeButton.addActionListener(e -> {
+        configFrame.dispose();
+        showModifyGameTimeConfiguration();
+        });
+        panel.add(modifyGameTimeButton);
+        
+        JButton nothingButton = new JButton("Nada");
+        nothingButton.addActionListener(e -> {
+            configFrame.dispose();
+            setButtonsAndIconsEnabled(true);
+        });
+        panel.add(nothingButton);
+
+        configFrame.add(panel);
+        configFrame.setVisible(true);
+        
+        configFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                setButtonsAndIconsEnabled(true);
+            }
+        });
     }
 
-    // Metodo que muestra la configuracion en el que se modifica los valores a través de los FieldText
+    // Método que muestra la configuración en el que se modifica los valores a través de los FieldText
     public void showSpecificGameConfiguration() {
-        JPanel panel = new JPanel(new GridLayout(0, 2));
+        JFrame configFrame = new JFrame("CONFIGURACIÓN ESPECÍFICA JUEGO");
+        configFrame.setSize(500, 300);
+        configFrame.setLocationRelativeTo(frame);
+        configFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
         panel.add(new JLabel("Puntuación Casillas Formas Eliminadas:"));
         JTextField puntCasillasEliminadasField = new JTextField("" + tetrisGame.getRemoveCellCost());
         panel.add(puntCasillasEliminadasField);
@@ -199,54 +241,123 @@ public class SettingsLogic {
 
         panel.add(new JLabel("Imagen Casillas Formas:"));
         JTextField imgCasillasFormasField = new JTextField("" + casella.getOcuppiedCellTexture());
+        // Obtener el texto actual del JTextField
+        String text = imgCasillasFormasField.getText();
+
+        // Verificar si el texto tiene al menos 5 caracteres (para eliminar el primero y los últimos cuatro)
+        if (text.length() >= 5) {
+            // Eliminar el primer carácter y los últimos cuatro caracteres
+            String newText = text.substring(1, text.length() - 4);
+
+            // Establecer el nuevo texto en el JTextField
+            imgCasillasFormasField.setText(newText);
+        } else {
+            // Manejar caso donde el texto es demasiado corto para realizar la operación deseada
+            System.out.println("El texto es demasiado corto para eliminar el primer y los últimos cuatro caracteres.");
+        }
         panel.add(imgCasillasFormasField);
 
-        int result = JOptionPane.showConfirmDialog(frame, panel, "CONFIGURACIÓN ESPECÍFICA JUEGO", JOptionPane.OK_CANCEL_OPTION);
-        if (result == JOptionPane.OK_OPTION) {
+        JPanel buttonPanel = new JPanel();
+        JButton okButton = new JButton("OK");
+        okButton.addActionListener(e -> {
             try {
                 int puntCasillasEliminadas = Integer.parseInt(puntCasillasEliminadasField.getText());
                 int puntRotarForma = Integer.parseInt(puntRotarFormaField.getText());
                 int puntNuevaForma = Integer.parseInt(puntNuevaFormaField.getText());
-                String imgCasillasFormas = "/" + imgCasillasFormasField.getText() + ".jpg";
-
+                String imgCasillasFormas = imgCasillasFormasField.getText().trim();
+                
+                
+                // Check if the texture file exists
+                String texturePath = "/" + imgCasillasFormas + ".jpg";
+                InputStream inputStream = getClass().getResourceAsStream(texturePath);
+                if (inputStream == null) {
+                    JOptionPane.showMessageDialog(configFrame, "El archivo de textura especificado no existe.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return; //Se vuelve a pedir al usuario una textura válida
+                }
+                
                 // Se aplican los cambios realizados
                 tetrisGame.setRemoveCellCost(puntCasillasEliminadas);
                 tetrisGame.setRotateFormScoreCost(puntRotarForma);
                 tetrisGame.setChangeFormCost(puntNuevaForma);
-                casella.setOcuppiedCellTexture(imgCasillasFormas);
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(frame, "Por favor ingrese valores válidos para las puntuaciones.", "Error", JOptionPane.ERROR_MESSAGE);
+                casella.setOcuppiedCellTexture(texturePath);
+                setButtonsAndIconsEnabled(true);
+
+                configFrame.dispose(); // Cierra el frame cuando se presiona OK
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(configFrame, "Por favor ingrese valores válidos para las puntuaciones.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        }
+        });
+        buttonPanel.add(okButton);
+
+        JButton cancelButton = new JButton("Cancelar");
+        cancelButton.addActionListener(e -> {
+        configFrame.dispose(); // Cierra el frame cuando se presiona Cancelar
+        setButtonsAndIconsEnabled(true);
+        });
+        buttonPanel.add(cancelButton);
+
+        configFrame.add(panel, BorderLayout.CENTER);
+        configFrame.add(buttonPanel, BorderLayout.SOUTH);
+
+        configFrame.setVisible(true);
+        
+        configFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                setButtonsAndIconsEnabled(true);
+            }
+        });
     }
 
-    // Metodo para la configuración del tiempo
+    // Método para la configuración del tiempo
     public void showModifyGameTimeConfiguration() {
-        JPanel panel = new JPanel(new GridLayout(0, 2));
+        JFrame configFrame = new JFrame("MODIFICAR TIEMPO PARTIDA");
+        configFrame.setSize(300, 150);
+        configFrame.setLocationRelativeTo(frame);
+        configFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
         panel.add(new JLabel("Tiempo de Partida:"));
         JTextField tiempoPartidaField = new JTextField("" + tetrisGame.getTotalGameTime());
         panel.add(tiempoPartidaField);
 
-        boolean validInput = false;
-
-        while (!validInput) {
-            int result = JOptionPane.showConfirmDialog(frame, panel, "MODIFICAR TIEMPO PARTIDA", JOptionPane.OK_CANCEL_OPTION);
-            if (result == JOptionPane.OK_OPTION) {
-                try {
-                    int tiempoPartida = Integer.parseInt(tiempoPartidaField.getText());
-                    if (tiempoPartida > 0) {
-                        tetrisGame.setTotalGameTime(tiempoPartida);
-                        validInput = true;
-                    } else {
-                        JOptionPane.showMessageDialog(frame, "El tiempo de partida debe ser mayor que 0.", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-                } catch (NumberFormatException e) {
-                    JOptionPane.showMessageDialog(frame, "Por favor ingrese un valor válido para el tiempo de partida.", "Error", JOptionPane.ERROR_MESSAGE);
+        JPanel buttonPanel = new JPanel();
+        JButton okButton = new JButton("OK");
+        okButton.addActionListener(e -> {
+            try {
+                int tiempoPartida = Integer.parseInt(tiempoPartidaField.getText());
+                if (tiempoPartida > 0) {
+                    tetrisGame.setTotalGameTime(tiempoPartida);
+                    setButtonsAndIconsEnabled(true);
+                    configFrame.dispose(); // Closes the frame when OK is pressed
+                } else {
+                    JOptionPane.showMessageDialog(configFrame, "El tiempo de partida debe ser mayor que 0.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-            } else {
-                break; // Se cancela el cambio
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(configFrame, "Por favor ingrese un valor válido para el tiempo de partida.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        }
-    }
-    
+        });
+        buttonPanel.add(okButton);
+
+        JButton cancelButton = new JButton("Cancelar");
+        cancelButton.addActionListener(e -> {
+        configFrame.dispose(); // Closes the frame when Cancel is pressed
+        setButtonsAndIconsEnabled(true);
+        });
+        buttonPanel.add(cancelButton);
+
+        configFrame.add(panel, BorderLayout.CENTER);
+        configFrame.add(buttonPanel, BorderLayout.SOUTH);
+
+        configFrame.setVisible(true);
+        
+        configFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                setButtonsAndIconsEnabled(true);
+            }
+        });
+    } 
 }

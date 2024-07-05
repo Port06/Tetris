@@ -255,28 +255,32 @@ public class Tetris {
         nuevaPartidaButton.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
             settingsLogic.promptForPlayerName();
-            setButtonsAndIconsEnabled(true);
+            //No se deben reactivar los botones
+            //porque queremos que esten desactivados 
         });
         
         configuracionButton.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
             settingsLogic.openConfigurationWindow();
-            setButtonsAndIconsEnabled(true);
+            //No se deben reactivar los botones
+            //porque queremos que esten desactivados 
         });
-        
-        salirButton.addActionListener(e -> System.exit(0));
+                
+        historialButton.addActionListener(e -> {
+            setButtonsAndIconsEnabled(false);
+            settingsLogic.showGameHistoryWindow();
+            //No se deben reactivar los botones
+            //porque queremos que esten desactivados 
+        });
         
         informacionButton.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
             settingsLogic.showInfoWindow();
-            setButtonsAndIconsEnabled(true);
+            //No se deben reactivar los botones
+            //porque queremos que esten desactivados 
         });
         
-        historialButton.addActionListener(e -> {
-            setButtonsAndIconsEnabled(false);
-            settingsLogic.showGameHistoryWindow();
-            setButtonsAndIconsEnabled(true);
-        });
+        salirButton.addActionListener(e -> System.exit(0));
 
         sidePanel.add(nuevaPartidaButton);
         sidePanel.add(configuracionButton);
@@ -322,28 +326,32 @@ public class Tetris {
         nuevaPartidaIconButton.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
             settingsLogic.promptForPlayerName();
-            setButtonsAndIconsEnabled(true);
+            //No se deben reactivar los botones
+            //porque queremos que esten desactivados 
         });
 
         configuracionIconButton.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
             settingsLogic.openConfigurationWindow();
-            setButtonsAndIconsEnabled(true);
+            //No se deben reactivar los botones
+            //porque queremos que esten desactivados 
         });
-
-        salirIconButton.addActionListener(e -> System.exit(0));
+        
+        historialIconButton.addActionListener(e -> {
+            setButtonsAndIconsEnabled(false);
+            settingsLogic.showGameHistoryWindow();
+            //No se deben reactivar los botones
+            //porque queremos que esten desactivados 
+        });
 
         informacionIconButton.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
             settingsLogic.showInfoWindow();
-            setButtonsAndIconsEnabled(true);
+            //No se deben reactivar los botones
+            //porque queremos que esten desactivados 
         });
-
-        historialIconButton.addActionListener(e -> {
-            setButtonsAndIconsEnabled(false);
-            settingsLogic.showGameHistoryWindow();
-            setButtonsAndIconsEnabled(true);
-        });
+        
+        salirIconButton.addActionListener(e -> System.exit(0));
         
         //Initializacion menu desplegable
         JPopupMenu dropdownMenu = new JPopupMenu();
@@ -360,28 +368,32 @@ public class Tetris {
         nuevaPartidaItem.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
             settingsLogic.promptForPlayerName();
-            setButtonsAndIconsEnabled(true);
+            //No se deben reactivar los botones
+            //porque queremos que esten desactivados 
         });
 
         configuracionItem.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
             settingsLogic.openConfigurationWindow();
-            setButtonsAndIconsEnabled(true);
+            //No se deben reactivar los botones
+            //porque queremos que esten desactivados 
         });
-
-        salirItem.addActionListener(e -> System.exit(0));
+        
+        historialItem.addActionListener(e -> {
+            setButtonsAndIconsEnabled(false);
+            settingsLogic.showGameHistoryWindow();
+            //No se deben reactivar los botones
+            //porque queremos que esten desactivados 
+        });
 
         informacionItem.addActionListener(e -> {
             setButtonsAndIconsEnabled(false);
             settingsLogic.showInfoWindow();
-            setButtonsAndIconsEnabled(true);
+            //No se deben reactivar los botones
+            //porque queremos que esten desactivados 
         });
-
-        historialItem.addActionListener(e -> {
-            setButtonsAndIconsEnabled(false);
-            settingsLogic.showGameHistoryWindow();
-            setButtonsAndIconsEnabled(true);
-        });
+        
+        salirItem.addActionListener(e -> System.exit(0));
 
         // Mostrar el menú desplegable al hacer clic en el label
         menuLabel.addMouseListener(new MouseAdapter() {
