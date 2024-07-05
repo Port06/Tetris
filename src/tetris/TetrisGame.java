@@ -9,6 +9,8 @@ import java.util.List;
 //y la actualizacion de piezas.
 public class TetrisGame {
     
+    private static GameMenu gameMenu;
+    
     private List<TetrisPiece> availablePieces;
     private TetrisPiece currentPiece;
     private TetrisPiece draggedPiece;
@@ -28,7 +30,10 @@ public class TetrisGame {
     private static PreviewPanel previewPanel;
     private static Tauler tauler;
 
-    public TetrisGame() {
+    public TetrisGame(GameMenu gameMenu) {
+        //Inicializar gameMenu
+        this.gameMenu = gameMenu;
+        
         // Cargar las piezas disponibles llamando al método createPieces de TetrisPiece
         availablePieces = TetrisPiece.createPieces();
         currentPiece = selectRandomPiece();
@@ -153,4 +158,11 @@ public class TetrisGame {
         previewPanel.repaint();
         tauler.repaint();
     }
+    
+    // Method to increase the score
+    public void increaseScore() {
+        setPlayerScore(playerScore + removeCellCost);
+        gameMenu.updatePlayerScore();
+    }
+    
 }

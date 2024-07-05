@@ -48,6 +48,10 @@ public class GameMenu {
         this.gameIO = gameIO;
     }
     
+    public void setGameMenu(GameMenu gameMenu) {
+        this.gameMenu = gameMenu;
+    }
+    
     public void setTetris(Tetris tetris) {
         this.tetris = tetris;
     }
@@ -148,6 +152,7 @@ public class GameMenu {
                 previewPanel.setPreviewPiece(tetrisGame.getCurrentPiece());
                 tetrisGame.setPlayerScore(tetrisGame.getPlayerScore() + tetrisGame.getRotateFormScoreCost()); // Penalize player
                 scoreField.setText("Score: " + tetrisGame.getPlayerScore());
+                tauler.requestFocusInWindow(); // Establecer el foco en Tauler
                 previewPanel.repaint();
             }
         });
@@ -156,6 +161,7 @@ public class GameMenu {
             tetrisGame.updatePiece();
             tetrisGame.setPlayerScore(tetrisGame.getPlayerScore() + tetrisGame.getChangeFormCost()); // Penalize player
             scoreField.setText("Score: " + tetrisGame.getPlayerScore());
+            tauler.requestFocusInWindow(); // Establecer el foco en Tauler
         });
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -206,17 +212,7 @@ public class GameMenu {
 
         // Start the game timer
         gameTimer.start();
-    }
-    
-    
-
-    // Method to increase the score
-    public static void increaseScore() {
-        tetrisGame.setPlayerScore(tetrisGame.getPlayerScore() + tetrisGame.getRemoveCellCost());
-        scoreField.setText("Score: " + tetrisGame.getPlayerScore());
-    }
-    
-    
+    }  
 
     // Method to handle the end of the game
     private static void endGame() {
@@ -246,5 +242,9 @@ public class GameMenu {
         gamePanel.removeAll();
         frame.getContentPane().removeAll();
         tetris.showMainMenu();
+    }
+    
+    public void updatePlayerScore() {
+        scoreField.setText("Score: " + tetrisGame.getPlayerScore());
     }
 }

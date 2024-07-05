@@ -14,6 +14,7 @@ public class Tauler extends JPanel implements KeyListener {
     private static final int COSTAT = MAXIM / DIMENSIO;
     private Casella[][] t;
     private Point mousePosition;
+    private boolean draggingPiece = false;
     
     
     //Variables aditionales para acceder a otras clases
@@ -54,14 +55,6 @@ public class Tauler extends JPanel implements KeyListener {
         
         //Creacion de los metodos necesarios que utilizan el raton
         //para poder arastrar piezas por el tablero asi como colocarlas
-        previewPanel.addMouseMotionListener(new MouseAdapter() {
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                updateMousePosition(e);
-                repaint();
-            }
-        });
-
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -77,6 +70,7 @@ public class Tauler extends JPanel implements KeyListener {
                     if (isValidPlacement(tetrisGame.getDraggedPiece(), startX, startY)) {
                         //Se coloca la pieza
                         placePiece(tetrisGame.getDraggedPiece(), startX, startY);
+                        draggingPiece = false;
 
                         //Se verifica si se a completado una fila o columna
                         for (int i = 0; i < DIMENSIO; i++) {
@@ -91,8 +85,7 @@ public class Tauler extends JPanel implements KeyListener {
                         tetrisGame.updatePiece();
                         
                     } else {
-                        //Posicion invalida
-                        //No se hace nada
+                         draggingPiece = false; // Reset dragging state immediately on invalid placement
                     }
                     tetrisGame.setDraggedPiece(null); // Clear the dragged piece
                     repaint();
@@ -107,13 +100,18 @@ public class Tauler extends JPanel implements KeyListener {
                 repaint();
             }
         });
-        
+
         previewPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                tetrisGame.setCurrentPieceToDragged(); //Se ccrea una copia de la pieza actual
-                updateMousePosition(e);
-                repaint();
+                if (!draggingPiece) { //Verifica si no hay piece en arrastre
+                    tetrisGame.setCurrentPieceToDragged(); //Crea una copia de la pieza actual
+                    draggingPiece = true; //Marca que la pieza esta en arrastre
+                    updateMousePosition(e);
+                    repaint();
+                } else {
+                    //Nada
+                }
             }
         });
     }
@@ -125,6 +123,8 @@ public class Tauler extends JPanel implements KeyListener {
             if (tetrisGame.getCurrentPiece() != null) {
                 tetrisGame.getCurrentPiece().rotateClockwise();
                 previewPanel.setPreviewPiece(tetrisGame.getCurrentPiece());
+                tetrisGame.setPlayerScore(tetrisGame.getPlayerScore() + tetrisGame.getRotateFormScoreCost()); // Penalize player
+                gameMenu.updatePlayerScore();
                 previewPanel.repaint();
                 repaint(); //Actualizar el tablero
             }
@@ -132,6 +132,8 @@ public class Tauler extends JPanel implements KeyListener {
             if (tetrisGame.getCurrentPiece() != null) {
                 tetrisGame.getCurrentPiece().rotateCounterClockwise();
                 previewPanel.setPreviewPiece(tetrisGame.getCurrentPiece());
+                tetrisGame.setPlayerScore(tetrisGame.getPlayerScore() + tetrisGame.getRotateFormScoreCost()); // Penalize player
+                gameMenu.updatePlayerScore();
                 previewPanel.repaint();
                 repaint(); //Actualizar el tablero
             }
@@ -291,7 +293,7 @@ public class Tauler extends JPanel implements KeyListener {
         for (int j = 0; j < DIMENSIO; j++) {
             t[row][j].setOcupada(false);
             t[row][j].setTexture(); // Pass the file name directly
-            gameMenu.increaseScore(); //Se recompensa el jugador
+            tetrisGame.increaseScore(); //Se recompensa el jugador
         }
     }
 
@@ -300,7 +302,7 @@ public class Tauler extends JPanel implements KeyListener {
         for (int i = 0; i < DIMENSIO; i++) {
             t[i][col].setOcupada(false);
             t[i][col].setTexture(); // Pass the file name directly
-            gameMenu.increaseScore(); //Se penaliza el jugador
+            tetrisGame.increaseScore(); //Se penaliza el jugador
         }
     }
     

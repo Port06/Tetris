@@ -13,7 +13,7 @@ public class Main {
         //Aqui se crean todas las intancias necessarias para el programa
         GameIO gameIO = new GameIO();
         GameMenu gameMenu = new GameMenu(gameIO);
-        TetrisGame tetrisGame = new TetrisGame();
+        TetrisGame tetrisGame = new TetrisGame(gameMenu);
         
         tetris = new Tetris(gameIO, gameMenu, tetrisGame); 
         
@@ -22,5 +22,6 @@ public class Main {
         tetris.setSettingsLogic(settingsLogic);
         settingsLogic.setTetris(tetris);
         gameMenu.setTetris(tetris);
+        gameMenu.setGameMenu(gameMenu);
     }
 }
