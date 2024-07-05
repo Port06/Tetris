@@ -232,23 +232,24 @@ public class Tauler extends JPanel implements KeyListener {
             }
         }
 
-        //Se dibuja la pieza que sigue el raton tras haberla seleccionado en el preview panel
+        // Se dibuja la pieza que sigue el ratón tras haberla seleccionado en el preview panel
         if (tetrisGame.getDraggedPiece() != null && mousePosition != null) {
             boolean[][] shape = tetrisGame.getDraggedPiece().getShape();
             int pieceWidth = tetrisGame.getDraggedPiece().getWidth();
             int pieceHeight = tetrisGame.getDraggedPiece().getHeight();
+            // Se ajusta la posición de la pieza al centro del ratón para que sea
+            // más intuitivo colocarla en el tablero
             int startX = mousePosition.x - (pieceWidth * COSTAT) / 2;
             int startY = mousePosition.y - (pieceHeight * COSTAT) / 2;
 
+            Image draggedPieceTexture = new ImageIcon(getClass().getResource(Casella.getOcuppiedCellTexture())).getImage();
             for (int i = 0; i < pieceHeight; i++) {
                 for (int j = 0; j < pieceWidth; j++) {
                     if (shape[i][j]) {
                         int x = startX + j * COSTAT;
                         int y = startY + i * COSTAT;
-                        g2d.setColor(new Color(255, 0, 0, 100));
-                        //Se define un color para la pieza usando rgb
-                        //Se puede cambiar segun las necessidades del programador      
-                        g2d.fillRect(x, y, COSTAT, COSTAT);
+                        // Se dibuja la textura en lugar de un color sólido
+                        g2d.drawImage(draggedPieceTexture, x, y, COSTAT, COSTAT, null);
                     }
                 }
             }
