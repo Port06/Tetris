@@ -1,2 +1,2 @@
 Tetris UIB 2nd semester final project!
-Currently still in the works!
+Finished for it's orginal intentions!
